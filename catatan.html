@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catatan - ToolKu</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #222;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+textarea {
+    width: 100%;
+    min-height: 300px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    resize: vertical;
+    outline: none;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.simpan {
+    background: #222;
+    color: white;
+}
+
+.hapus {
+    background: #ddd;
+}
+
+.kembali {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #555;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📝 Catatan</h1>
+
+    <textarea id="catatan" placeholder="Tulis catatan di sini..."></textarea>
+
+    <div class="buttons">
+        <button class="simpan" onclick="simpanCatatan()">💾 Simpan</button>
+        <button class="hapus" onclick="hapusCatatan()">🗑️ Hapus</button>
+    </div>
+
+    <a href="index.html" class="kembali">← Kembali ke ToolKu</a>
+
+</div>
+
+<script>
+
+let catatan = document.getElementById("catatan");
+
+catatan.value = localStorage.getItem("catatanToolKu") || "";
+
+function simpanCatatan() {
+
+    localStorage.setItem(
+        "catatanToolKu",
+        catatan.value
+    );
+
+    alert("✅ Catatan berhasil disimpan!");
+}
+
+function hapusCatatan() {
+
+    catatan.value = "";
+
+    localStorage.removeItem("catatanToolKu");
+
+    alert("🗑️ Catatan berhasil dihapus!");
+}
+
+</script>
+
+</body>
+</html>

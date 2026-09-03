@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resize Foto - ToolKu</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .ukuran {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .ukuran input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        button,
+        .download {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: #111827;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 12px;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+        }
+
+        #preview {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .info {
+            margin-top: 12px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #111827;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🖼️ Resize Foto</h1>
+
+    <div class="box">
+
+        <input
+            type="file"
+            id="foto"
+            accept="image/*"
+            onchange="tampilkanFoto()"
+        >
+
+        <div class="ukuran">
+
+            <input
+                type="number"
+                id="lebar"
+                placeholder="Lebar (px)"
+            >
+
+            <input
+                type="number"
+                id="tinggi"
+                placeholder="Tinggi (px)"
+            >
+
+        </div>
+
+        <button onclick="resizeFoto()">
+            Resize Foto
+        </button>
+
+        <img id="preview">
+
+        <div id="info" class="info"></div>
+
+        <a
+            id="download"
+            class="download"
+            style="display:none;"
+        >
+            ⬇️ Download Foto
+        </a>
+
+    </div>
+
+    <a class="back" href="index.html">
+        ← Kembali ke ToolKu
+    </a>
+
+</div>
+
+<script>
+
+let gambar = new Image();
+
+function tampilkanFoto() {
+
+    let file = document.getElementById("foto").files[0];
+
+    if (!file) return;
+
+    let url = URL.createObjectURL(file);
+
+    gambar.onload = function() {
+
+        document.getElementById("lebar").value =
+            gambar.width;
+
+        document.getElementById("tinggi").value =
+            gambar.height;
+
+        let preview =
+            document.getElementById("preview");
+
+        preview.src = url;
+        preview.style.display = "block";
+
+        document.getElementById("info").textContent =
+            "Ukuran asli: " +
+            gambar.width +
+            " × " +
+            gambar.height +
+            " px";
+    };
+
+    gambar.src = url;
+}
+
+function resizeFoto() {
+
+    if (!gambar.src) {
+        alert("Pilih foto terlebih dahulu.");
+        return;
+    }
+
+    let lebar =
+        parseInt(document.getElementById("lebar").value);
+
+    let tinggi =
+        parseInt(document.getElementById("tinggi").value);
+
+    if (!lebar || !tinggi || lebar <= 0 || tinggi <= 0) {
+        alert("Masukkan ukuran yang valid.");
+        return;
+    }
+
+    let canvas = document.createElement("canvas");
+
+    canvas.width = lebar;
+    canvas.height = tinggi;
+
+    let ctx = canvas.getContext("2d");
+
+    ctx.drawImage(
+        gambar,
+        0,
+        0,
+        lebar,
+        tinggi
+    );
+
+    let hasil = canvas.toDataURL("image/jpeg", 0.92);
+
+    let preview =
+        document.getElementById("preview");
+
+    preview.src = hasil;
+
+    let download =
+        document.getElementById("download");
+
+    download.href = hasil;
+    download.download = "toolku-resize.jpg";
+    download.style.display = "block";
+
+    document.getElementById("info").textContent =
+        "Ukuran baru: " +
+        lebar +
+        " × " +
+        tinggi +
+        " px";
+}
+
+</script>
+
+</body>
+</html>
