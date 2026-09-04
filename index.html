@@ -549,6 +549,59 @@ body.dark #tidakDitemukan{
 }
 </style>
 
+
+<style id="toolku-branding">
+header {
+    position: relative;
+    text-align: center;
+    padding: 28px 18px 24px;
+    margin-bottom: 18px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    text-shadow: 0 3px 14px rgba(0,0,0,.12);
+}
+
+header p {
+    margin: 9px auto 0;
+    max-width: 520px;
+    font-size: .98rem;
+    opacity: .72;
+    line-height: 1.5;
+}
+
+header::after {
+    content: "";
+    display: block;
+    width: 54px;
+    height: 4px;
+    margin: 16px auto 0;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: .18;
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 22px 14px 18px;
+        margin-bottom: 12px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header p {
+        font-size: .9rem;
+    }
+}
+</style>
+
 </head>
 
 <body>
