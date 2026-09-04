@@ -287,10 +287,43 @@ header p {
 .tools{margin-top:0}
 @media(max-width:600px){header{padding:28px 16px}header h1{font-size:32px}.search{margin-top:14px}.tool{padding:20px 28px}.tools{grid-template-columns:1fr;gap:14px}}
 </style><style id="favorit-modern">
-.favorit{color:#fff!important;font-size:25px!important;background:transparent;border:0;line-height:1;cursor:pointer;padding:4px 6px;border-radius:10px;transition:.2s}
-.favorit:hover{background:rgba(255,255,255,.10);transform:scale(1.12)}
-body.dark .favorit{color:#fff!important}
-body.dark .favorit:hover{background:rgba(255,255,255,.12)}
+.favorit{
+    color:#fff!important;
+    font-size:25px!important;
+    background:transparent;
+    border:0;
+    line-height:1;
+    cursor:pointer;
+    padding:6px 8px;
+    border-radius:12px;
+    transition:transform .2s ease,background .2s ease,color .2s ease;
+    -webkit-tap-highlight-color:transparent;
+}
+
+.favorit:hover{
+    background:rgba(255,255,255,.10);
+    transform:scale(1.12);
+}
+
+.favorit:active{
+    transform:scale(.92);
+}
+
+body.dark .favorit{
+    color:#fff!important;
+}
+
+body.dark .favorit:hover{
+    background:rgba(255,255,255,.12);
+}
+
+@media (max-width:600px){
+    .favorit{
+        font-size:24px!important;
+        padding:7px 9px;
+        border-radius:12px;
+    }
+}
 </style></head>
 
 <body>
