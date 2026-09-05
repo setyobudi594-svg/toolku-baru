@@ -644,31 +644,31 @@ header::after {
         </div>
 
 
-        <a href="kalkulator.html" class="tool" data-kategori="utilitas">
+        <a href="kalkulator.html" class="tool" data-kategori="utilitas" onclick="catatPenggunaan('Kalkulator')">
             <div class="icon">🧮</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Kalkulator', this)">☆</button>
             <h3>Kalkulator</h3>
             <p>Hitung angka dengan mudah.</p>
         </a>
 
-        <a href="qrcode.html" class="tool" data-kategori="utilitas">
+        <a href="qrcode.html" class="tool" data-kategori="utilitas" onclick="catatPenggunaan('Generator QR Code')">
             <div class="icon">🔳</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Generator QR Code', this)">☆</button>
             <h3>Generator QR Code</h3>
             <p>Buat QR Code dengan cepat.</p>
         </a>
 
-        <a href="resize.html" class="tool" data-kategori="foto">
+        <a href="resize.html" class="tool" data-kategori="foto" onclick="catatPenggunaan('Resize Foto')">
             <div class="icon">🖼️</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Resize Foto', this)">☆</button>
             <h3>Resize Foto</h3>
             <p>Ubah ukuran foto dengan mudah.</p>
         </a>
 
-        <a href="catatan.html" class="tool" data-kategori="utilitas">
+        <a href="catatan.html" class="tool" data-kategori="utilitas" onclick="catatPenggunaan('Catatan')">
             <div class="icon">📝</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Catatan', this)">☆</button>
             <h3>Catatan</h3>
             <p>Simpan catatan dengan mudah.</p>
         </a>
 
-        <a href="password.html" class="tool" data-kategori="keamanan">
+        <a href="password.html" class="tool" data-kategori="keamanan" onclick="catatPenggunaan('Generator Password')">
             <div class="icon">🔑</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Generator Password', this)">☆</button>
             <h3>Generator Password</h3>
             <p>Buat password yang kuat.</p>
@@ -752,6 +752,36 @@ function updateJumlahTools() {
         "🛠️ " + jumlah + " Tools tersedia";
 }
 
+function catatPenggunaan(nama) {
+    let penggunaan = JSON.parse(localStorage.getItem("toolUsage") || "{}");
+    penggunaan[nama] = (penggunaan[nama] || 0) + 1;
+    localStorage.setItem("toolUsage", JSON.stringify(penggunaan));
+}
+
+function tandaiToolPopuler() {
+    let penggunaan = JSON.parse(localStorage.getItem("toolUsage") || "{}");
+    let semuaTool = Array.from(document.querySelectorAll(".tool"));
+
+    semuaTool.forEach(function(tool) {
+        let judul = tool.querySelector("h3");
+        if (!judul) return;
+
+        let nama = judul.textContent.trim();
+        let badge = tool.querySelector(".badge-populer");
+
+        if (penggunaan[nama] >= 3) {
+            if (!badge) {
+                badge = document.createElement("span");
+                badge.className = "badge-populer";
+                badge.textContent = "🔥 Populer";
+                tool.appendChild(badge);
+            }
+        } else if (badge) {
+            badge.remove();
+        }
+    });
+}
+
 function tampilkanTools() {
 
     let input = document.getElementById("search").value.toLowerCase();
@@ -818,6 +848,7 @@ function tampilkanTools() {
     }
 
     updateJumlahTools();
+    tandaiToolPopuler();
 }
 
 function filterKategori(kategori, tombol) {
