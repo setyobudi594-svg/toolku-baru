@@ -8,10 +8,7 @@ const FILES = [
     "./resize.html",
     "./password.html",
     "./catatan.html",
-    "./manifest.json",
-    "./icon.svg",
-    "./icon-192.png",
-    "./icon-512.png",
+    "./manifest.json"
 ];
 
 self.addEventListener("install", event => {
