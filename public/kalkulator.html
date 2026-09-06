@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator - ToolKu</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        #display {
+            width: 100%;
+            height: 65px;
+            font-size: 28px;
+            text-align: right;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            height: 60px;
+            border: none;
+            border-radius: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            background: #eef2f7;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        .operator {
+            background: #dbeafe;
+        }
+
+        .clear {
+            background: #fee2e2;
+        }
+
+        .equals {
+            background: #111827;
+            color: white;
+        }
+
+        .back {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #111827;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🧮 Kalkulator</h1>
+
+    <div class="calculator">
+
+        <input id="display" type="text" value="0" readonly>
+
+        <div class="buttons">
+
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button onclick="hapus()">⌫</button>
+            <button onclick="tambah('%')">%</button>
+            <button class="operator" onclick="tambah('/')">÷</button>
+
+            <button onclick="tambah('7')">7</button>
+            <button onclick="tambah('8')">8</button>
+            <button onclick="tambah('9')">9</button>
+            <button class="operator" onclick="tambah('*')">×</button>
+
+            <button onclick="tambah('4')">4</button>
+            <button onclick="tambah('5')">5</button>
+            <button onclick="tambah('6')">6</button>
+            <button class="operator" onclick="tambah('-')">−</button>
+
+            <button onclick="tambah('1')">1</button>
+            <button onclick="tambah('2')">2</button>
+            <button onclick="tambah('3')">3</button>
+            <button class="operator" onclick="tambah('+')">+</button>
+
+            <button onclick="tambah('0')">0</button>
+            <button onclick="tambah('.')">.</button>
+            <button class="equals" onclick="hitung()">=</button>
+
+        </div>
+
+    </div>
+
+    <a class="back" href="index.html">← Kembali ke ToolKu</a>
+
+</div>
+
+<script>
+function tambah(nilai) {
+    let display = document.getElementById("display");
+
+    if (display.value === "0") {
+        display.value = nilai;
+    } else {
+        display.value += nilai;
+    }
+}
+
+function clearDisplay() {
+    document.getElementById("display").value = "0";
+}
+
+function hapus() {
+    let display = document.getElementById("display");
+
+    display.value = display.value.slice(0, -1);
+
+    if (display.value === "") {
+        display.value = "0";
+    }
+}
+
+function hitung() {
+    let display = document.getElementById("display");
+
+    try {
+        display.value = Function(
+            "return " + display.value
+        )();
+    } catch {
+        display.value = "Error";
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>QR Code - ToolKu</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: #111827;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        button.clear {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            min-height: 20px;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #111827;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🔳 QR Code</h1>
+
+    <div class="box">
+
+        <input
+            id="text"
+            type="text"
+            placeholder="Masukkan teks atau link..."
+        >
+
+        <button onclick="buatQR()">Buat QR Code</button>
+
+        <button class="clear" onclick="bersihkan()">Bersihkan</button>
+
+        <div id="qrcode"></div>
+
+    </div>
+
+    <a class="back" href="index.html">← Kembali ke ToolKu</a>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+function buatQR() {
+
+    let text = document.getElementById("text").value.trim();
+    let area = document.getElementById("qrcode");
+
+    if (text === "") {
+        alert("Masukkan teks atau link terlebih dahulu.");
+        return;
+    }
+
+    area.innerHTML = "";
+
+    new QRCode(area, {
+        text: text,
+        width: 220,
+        height: 220
+    });
+}
+
+function bersihkan() {
+    document.getElementById("text").value = "";
+    document.getElementById("qrcode").innerHTML = "";
+}
+</script>
+
+</body>
+</html>
