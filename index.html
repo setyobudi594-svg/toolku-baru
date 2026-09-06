@@ -602,101 +602,7 @@ header::after {
 }
 </style>
 
-<style id="toolku-populer">
-.tools-populer {
-    margin: 18px 0 22px;
-    padding: 18px;
-    border-radius: 20px;
-    background: rgba(255,255,255,.72);
-    border: 1px solid rgba(0,0,0,.07);
-    box-shadow: 0 6px 20px rgba(0,0,0,.06);
-}
 
-.populer-header {
-    margin-bottom: 14px;
-}
-
-.populer-header h2 {
-    margin: 0;
-    font-size: 1.15rem;
-}
-
-.populer-header p {
-    margin: 4px 0 0;
-    font-size: .85rem;
-    opacity: .65;
-}
-
-.populer-list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-
-.populer-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 14px;
-    text-decoration: none;
-    color: inherit;
-    background: rgba(255,255,255,.9);
-    border: 1px solid rgba(0,0,0,.06);
-    transition: transform .18s ease, box-shadow .18s ease;
-}
-
-.populer-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,.09);
-}
-
-.populer-icon {
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.populer-info {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.populer-info strong {
-    font-size: .9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.populer-info small {
-    margin-top: 3px;
-    font-size: .72rem;
-    opacity: .6;
-}
-
-.populer-kosong {
-    padding: 12px;
-    text-align: center;
-    font-size: .85rem;
-    opacity: .6;
-}
-
-@media (max-width: 600px) {
-    .tools-populer {
-        padding: 14px;
-        border-radius: 16px;
-    }
-
-    .populer-list {
-        grid-template-columns: 1fr;
-    }
-
-    .populer-card {
-        padding: 11px;
-    }
-}
-</style>
 </head>
 
 <body>
@@ -732,13 +638,7 @@ header::after {
         <button onclick="filterKategori('keamanan', this)">🔐 Keamanan</button>
     </div>
 
-    <section id="toolsPopuler" class="tools-populer">
-        <div class="populer-header">
-            <h2>🔥 Tools Populer</h2>
-            <p>Tool yang paling sering digunakan</p>
-        </div>
-        <div id="daftarPopuler" class="populer-list"></div>
-    </section>
+
 
     <div class="tools">
         <div id="tidakDitemukan">
@@ -747,31 +647,31 @@ header::after {
         </div>
 
 
-        <a href="kalkulator.html" class="tool" data-kategori="utilitas" onclick="catatPenggunaan('Kalkulator')">
+        <a href="kalkulator.html" class="tool" data-kategori="utilitas">
             <div class="icon">🧮</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Kalkulator', this)">☆</button>
             <h3>Kalkulator</h3>
             <p>Hitung angka dengan mudah.</p>
         </a>
 
-        <a href="qrcode.html" class="tool" data-kategori="utilitas" onclick="catatPenggunaan('Generator QR Code')">
+        <a href="qrcode.html" class="tool" data-kategori="utilitas">
             <div class="icon">🔳</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Generator QR Code', this)">☆</button>
             <h3>Generator QR Code</h3>
             <p>Buat QR Code dengan cepat.</p>
         </a>
 
-        <a href="resize.html" class="tool" data-kategori="foto" onclick="catatPenggunaan('Resize Foto')">
+        <a href="resize.html" class="tool" data-kategori="foto">
             <div class="icon">🖼️</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Resize Foto', this)">☆</button>
             <h3>Resize Foto</h3>
             <p>Ubah ukuran foto dengan mudah.</p>
         </a>
 
-        <a href="catatan.html" class="tool" data-kategori="utilitas" onclick="catatPenggunaan('Catatan')">
+        <a href="catatan.html" class="tool" data-kategori="utilitas">
             <div class="icon">📝</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Catatan', this)">☆</button>
             <h3>Catatan</h3>
             <p>Simpan catatan dengan mudah.</p>
         </a>
 
-        <a href="password.html" class="tool" data-kategori="keamanan" onclick="catatPenggunaan('Generator Password')">
+        <a href="password.html" class="tool" data-kategori="keamanan">
             <div class="icon">🔑</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Generator Password', this)">☆</button>
             <h3>Generator Password</h3>
             <p>Buat password yang kuat.</p>
@@ -855,80 +755,8 @@ function updateJumlahTools() {
         "🛠️ " + jumlah + " Tools tersedia";
 }
 
-function catatPenggunaan(nama) {
-    let penggunaan = JSON.parse(localStorage.getItem("toolUsage") || "{}");
-    penggunaan[nama] = (penggunaan[nama] || 0) + 1;
-    localStorage.setItem("toolUsage", JSON.stringify(penggunaan));
-}
 
-function tampilkanToolsPopuler() {
-    let penggunaan = JSON.parse(localStorage.getItem("toolUsage") || "{}");
-    let daftar = document.getElementById("daftarPopuler");
-    if (!daftar) return;
 
-    daftar.innerHTML = "";
-
-    let populer = Object.entries(penggunaan)
-        .sort(function(a, b) {
-            return b[1] - a[1];
-        })
-        .slice(0, 3);
-
-    if (populer.length === 0) {
-        daftar.innerHTML = '<div class="populer-kosong">Belum ada tool yang digunakan.</div>';
-        return;
-    }
-
-    populer.forEach(function(item) {
-        let nama = item[0];
-        let jumlah = item[1];
-
-        let tool = Array.from(document.querySelectorAll(".tool")).find(function(el) {
-            let judul = el.querySelector("h3");
-            return judul && judul.textContent.trim() === nama;
-        });
-
-        if (!tool) return;
-
-        let link = tool.getAttribute("href");
-        let icon = tool.querySelector(".icon").textContent;
-
-        let kartu = document.createElement("a");
-        kartu.href = link;
-        kartu.className = "populer-card";
-
-        kartu.innerHTML =
-            '<span class="populer-icon">' + icon + '</span>' +
-            '<span class="populer-info"><strong>' + nama + '</strong>' +
-            '<small>Dipakai ' + jumlah + ' kali</small></span>';
-
-        daftar.appendChild(kartu);
-    });
-}
-
-function tandaiToolPopuler() {
-    let penggunaan = JSON.parse(localStorage.getItem("toolUsage") || "{}");
-    let semuaTool = Array.from(document.querySelectorAll(".tool"));
-
-    semuaTool.forEach(function(tool) {
-        let judul = tool.querySelector("h3");
-        if (!judul) return;
-
-        let nama = judul.textContent.trim();
-        let badge = tool.querySelector(".badge-populer");
-
-        if (penggunaan[nama] >= 3) {
-            if (!badge) {
-                badge = document.createElement("span");
-                badge.className = "badge-populer";
-                badge.textContent = "🔥 Populer";
-                tool.appendChild(badge);
-            }
-        } else if (badge) {
-            badge.remove();
-        }
-    });
-}
 
 function tampilkanTools() {
 
@@ -996,8 +824,6 @@ function tampilkanTools() {
     }
 
     updateJumlahTools();
-    tandaiToolPopuler();
-    tampilkanToolsPopuler();
 }
 
 function filterKategori(kategori, tombol) {
