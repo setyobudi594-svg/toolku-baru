@@ -1,24 +1,22 @@
 {
-  "name": "ToolKu - Alat Online Gratis",
+  "name": "ToolKu",
   "short_name": "ToolKu",
-  "description": "Kumpulan alat online gratis dan praktis.",
+  "description": "Kumpulan tools online sederhana dan gratis.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#111827",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }

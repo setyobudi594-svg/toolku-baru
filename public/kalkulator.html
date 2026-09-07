@@ -10,39 +10,55 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: #f2f4f7;
+            --card: white;
+            --text: #222;
+            --input: white;
+            --button: #eee;
+            --operator: #ddd;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --input: #0f172a;
+            --button: #334155;
+            --operator: #475569;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f5f7fb;
+            background: var(--bg);
+            color: var(--text);
+            transition: .25s;
         }
 
-        .container {
+        .calculator {
             max-width: 400px;
-            margin: 40px auto;
+            margin: 30px auto;
             padding: 20px;
+            background: var(--card);
+            border-radius: 20px;
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .calculator {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
         }
 
         #display {
             width: 100%;
-            height: 65px;
-            font-size: 28px;
+            height: 70px;
+            font-size: 30px;
             text-align: right;
             padding: 10px;
             margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
+            border: 1px solid #475569;
+            border-radius: 10px;
+            background: var(--input);
+            color: var(--text);
         }
 
         .buttons {
@@ -53,119 +69,138 @@
 
         button {
             height: 60px;
+            font-size: 22px;
             border: none;
             border-radius: 12px;
-            font-size: 20px;
-            cursor: pointer;
-            background: #eef2f7;
+            background: var(--button);
         }
 
         button:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
         }
 
         .operator {
-            background: #dbeafe;
+            background: var(--operator);
+        }
+
+        .equal {
+            background: #222;
+            color: white;
         }
 
         .clear {
-            background: #fee2e2;
-        }
-
-        .equals {
-            background: #111827;
-            color: white;
+            background: #ffdddd;
         }
 
         .back {
             display: block;
-            margin-top: 20px;
             text-align: center;
+            margin-top: 20px;
             text-decoration: none;
-            color: #111827;
+            color: #222;
         }
     </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="calculator">
 
     <h1>🧮 Kalkulator</h1>
 
-    <div class="calculator">
+    <input type="text" id="display" value="0" readonly>
 
-        <input id="display" type="text" value="0" readonly>
+    <div class="buttons">
 
-        <div class="buttons">
+        <button class="clear" onclick="clearDisplay()">C</button>
+        <button onclick="deleteNumber()">⌫</button>
+        <button class="operator" onclick="addOperator('%')">%</button>
+        <button class="operator" onclick="addOperator('/')">÷</button>
 
-            <button class="clear" onclick="clearDisplay()">C</button>
-            <button onclick="hapus()">⌫</button>
-            <button onclick="tambah('%')">%</button>
-            <button class="operator" onclick="tambah('/')">÷</button>
+        <button onclick="addNumber('7')">7</button>
+        <button onclick="addNumber('8')">8</button>
+        <button onclick="addNumber('9')">9</button>
+        <button class="operator" onclick="addOperator('*')">×</button>
 
-            <button onclick="tambah('7')">7</button>
-            <button onclick="tambah('8')">8</button>
-            <button onclick="tambah('9')">9</button>
-            <button class="operator" onclick="tambah('*')">×</button>
+        <button onclick="addNumber('4')">4</button>
+        <button onclick="addNumber('5')">5</button>
+        <button onclick="addNumber('6')">6</button>
+        <button class="operator" onclick="addOperator('-')">−</button>
 
-            <button onclick="tambah('4')">4</button>
-            <button onclick="tambah('5')">5</button>
-            <button onclick="tambah('6')">6</button>
-            <button class="operator" onclick="tambah('-')">−</button>
+        <button onclick="addNumber('1')">1</button>
+        <button onclick="addNumber('2')">2</button>
+        <button onclick="addNumber('3')">3</button>
+        <button class="operator" onclick="addOperator('+')">+</button>
 
-            <button onclick="tambah('1')">1</button>
-            <button onclick="tambah('2')">2</button>
-            <button onclick="tambah('3')">3</button>
-            <button class="operator" onclick="tambah('+')">+</button>
-
-            <button onclick="tambah('0')">0</button>
-            <button onclick="tambah('.')">.</button>
-            <button class="equals" onclick="hitung()">=</button>
-
-        </div>
+        <button onclick="addNumber('0')">0</button>
+        <button onclick="addNumber('.')">.</button>
+        <button class="equal" onclick="calculate()">=</button>
 
     </div>
 
-    <a class="back" href="index.html">← Kembali ke ToolKu</a>
+    <a href="index.html" class="back">← Kembali ke ToolKu</a>
 
 </div>
 
 <script>
-function tambah(nilai) {
-    let display = document.getElementById("display");
+
+let display = document.getElementById("display");
+
+function addNumber(number) {
 
     if (display.value === "0") {
-        display.value = nilai;
+        display.value = number;
     } else {
-        display.value += nilai;
+        display.value += number;
     }
+
+}
+
+function addOperator(operator) {
+
+    display.value += operator;
+
 }
 
 function clearDisplay() {
-    document.getElementById("display").value = "0";
+
+    display.value = "0";
+
 }
 
-function hapus() {
-    let display = document.getElementById("display");
+function deleteNumber() {
 
-    display.value = display.value.slice(0, -1);
-
-    if (display.value === "") {
+    if (display.value.length > 1) {
+        display.value = display.value.slice(0, -1);
+    } else {
         display.value = "0";
     }
+
 }
 
-function hitung() {
-    let display = document.getElementById("display");
+function calculate() {
 
     try {
-        display.value = Function(
-            "return " + display.value
+
+        let result = Function(
+            '"use strict"; return (' + display.value + ')'
         )();
+
+        display.value = result;
+
     } catch {
+
         display.value = "Error";
+
     }
+
+}
+
+</script>
+
+<script>
+if (localStorage.getItem("tema") === "dark") {
+    document.body.classList.add("dark");
 }
 </script>
 

@@ -1,0 +1,43 @@
+#splashScreen{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    background:#111111;
+    color:#ffffff;
+    transition:opacity .4s ease, visibility .4s ease;
+}
+
+.splash-logo{
+    width:110px;
+    height:110px;
+    border-radius:24px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#ffffff;
+    color:#111111;
+    font-size:42px;
+    font-weight:bold;
+    margin-bottom:18px;
+}
+
+.splash-title{
+    font-size:26px;
+    font-weight:bold;
+}
+
+.splash-text{
+    margin-top:8px;
+    font-size:14px;
+    opacity:.7;
+}
+
+#splashScreen.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}

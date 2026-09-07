@@ -1,867 +1,1052 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>ToolKu - Alat Online Gratis</title>
-
-    <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-    <meta name="theme-color" content="#111827">
-
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #222;
-        }
-
-        header {
-            background: #111827;
-            color: white;
-            padding: 25px 20px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
-
-        header p {
-            color: #cbd5e1;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 20px;
-        }
-
-        .search {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        .kategori {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            margin-bottom: 20px;
-        }
-
-        .kategori button {
-            border: none;
-            background: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            white-space: nowrap;
-            cursor: pointer;
-        }
-
-        .kategori button.aktif {
-            background: #111827;
-            color: white;
-        }
-
-        .tools {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .tool {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            text-decoration: none;
-            color: #222;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-        }
-
-        .tool .icon {
-            font-size: 35px;
-            margin-bottom: 10px;
-        }
-
-        .tool h3 {
-            margin-bottom: 6px;
-        }
-
-        .tool p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        @media (max-width: 500px) {
-            .tools {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ToolKu - Alat Praktis Online</title>
 
 <style>
-.tool {
-    position: relative;
+*{box-sizing:border-box}
+
+:root{
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --border:#e5e7eb;
+    --header:#111827;
 }
 
-.favorit {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    border: none;
-    background: transparent;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 4px;
+body.dark{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --text:#f8fafc;
+    --muted:#cbd5e1;
+    --border:#334155;
+    --header:#020617;
 }
 
-.favorit:hover {
-    transform: scale(1.2);
-}
-
-#filterFavorit {
-    margin-bottom: 10px;
-}
-</style>
-
-
-<style>
-.tool {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.tool:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-.icon {
-    font-size: 38px;
-    margin-bottom: 8px;
-}
-
-.tool h3 {
-    margin: 5px 0;
-}
-
-.tool p {
-    color: #666;
-    font-size: 14px;
-}
-</style>
-
-
-<style>
-#tidakDitemukan {
-    display: none;
-    width: 100%;
-    text-align: center;
-    padding: 35px 20px;
-    color: #666;
-    font-size: 18px;
-}
-
-#tidakDitemukan small {
-    display: block;
-    margin-top: 8px;
-    font-size: 14px;
-}
-</style>
-
-
-<style>
-#hasilTools {
-    margin: -8px 0 15px;
-    color: #777;
-    font-size: 13px;
-}
-</style>
-
-
-<style>
-#modeTema {
-    border: none;
-    padding: 10px 15px;
-    border-radius: 20px;
-    background: #eeeeee;
-    cursor: pointer;
-    font-size: 14px;
-    margin-bottom: 12px;
-}
-</style>
-
-
-<style>
-body.dark {
-    background: #121212;
-    color: #eeeeee;
-}
-
-body.dark .tool {
-    background: #1e1e1e;
-    color: #eeeeee;
-}
-
-body.dark .tool p {
-    color: #bbbbbb;
-}
-
-body.dark .search,
-body.dark #modeTema,
-body.dark .kategori button,
-body.dark #filterFavorit {
-    background: #2a2a2a;
-    color: #eeeeee;
-}
-
-body.dark .kategori button.aktif,
-body.dark #filterFavorit.aktif {
-    background: #eeeeee;
-    color: #222222;
-}
-
-body.dark #jumlahTools,
-body.dark #hasilTools {
-    color: #bbbbbb;
-}
-
-body.dark #tidakDitemukan {
-    color: #bbbbbb;
-}
-</style>
-
-
-<style>
-header {
-    position: relative;
-    overflow: hidden;
-    padding: 32px 20px;
-    border-bottom-left-radius: 22px;
-    border-bottom-right-radius: 22px;
-}
-
-header::after {
-    content: "";
-    position: absolute;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-    top: -80px;
-    right: -50px;
-}
-
-header h1 {
-    position: relative;
-    z-index: 1;
-    font-size: 34px;
-    letter-spacing: 0.5px;
-}
-
-header p {
-    position: relative;
-    z-index: 1;
-    font-size: 15px;
-}
-</style>
-
-<style id="perbaikan-mobile">
-#filterFavorit{display:block;margin:14px 0 10px;padding:9px 14px;border:0;border-radius:10px;background:#2a2a2a;color:#eee;font-size:15px;cursor:pointer}
-#filterFavorit.aktif{background:#eee;color:#222}
-#jumlahTools{margin:10px 0 2px;font-size:17px;font-weight:600;line-height:1.5}
-#hasilTools{margin:0 0 16px;font-size:14px;line-height:1.5;color:#aaa}
-.kategori{margin-top:4px;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap}
-.tools{margin-top:0}
-@media(max-width:600px){header{padding:28px 16px}header h1{font-size:32px}.search{margin-top:14px}.tool{padding:20px 28px}.tools{grid-template-columns:1fr;gap:14px}}
-</style><style id="toolku-modern">
-.favorit{
-    color:#fff!important;
-    font-size:25px!important;
-    background:transparent;
-    border:0;
-    line-height:1;
-    cursor:pointer;
-    padding:6px 8px;
-    border-radius:12px;
-    transition:transform .2s ease,background .2s ease,color .2s ease;
-    -webkit-tap-highlight-color:transparent;
-}
-
-.favorit:hover{
-    background:rgba(255,255,255,.10);
-    transform:scale(1.12);
-}
-
-.favorit:active{
-    transform:scale(.92);
-}
-
-body.dark .favorit{
-    color:#fff!important;
-}
-
-body.dark .favorit:hover{
-    background:rgba(255,255,255,.12);
-}
-
-@media (max-width:600px){
-    .favorit{
-        font-size:24px!important;
-        padding:7px 9px;
-        border-radius:12px;
-    }
-}
-
-.tool{
-    position:relative;
-    overflow:hidden;
-    border-radius:18px;
-    transition:transform .2s ease,box-shadow .2s ease;
-}
-
-.tool:hover{
-    transform:translateY(-3px);
-}
-
-.tool:active{
-    transform:scale(.98);
-}
-
-.tool .icon{
-    transition:transform .25s ease;
-}
-
-.tool:hover .icon{
-    transform:scale(1.08);
-}
-
-.tool .favorit{
-    position:absolute;
-    top:10px;
-    right:10px;
-    z-index:5;
-}
-
-@media (max-width:600px){
-    .tool{
-        border-radius:16px;
-    }
-
-    .tool .icon{
-        font-size:32px;
-    }
-
-    .tool:hover{
-        transform:none;
-    }
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    transition:.25s;
 }
 
 header{
+    background:var(--header);
+    color:white;
+    padding:32px 20px;
+    text-align:center;
+}
+
+.top{
+    max-width:850px;
+    margin:auto;
     position:relative;
 }
 
-#search{
-    width:100%;
-    max-width:680px;
-    display:block;
-    margin:18px auto 14px;
-    padding:14px 18px;
-    border:1px solid rgba(128,128,128,.25);
-    border-radius:16px;
-    outline:none;
-    font-size:16px;
-    transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
-    box-sizing:border-box;
+header h1{
+    margin:0;
+    font-size:36px;
 }
 
-#search:focus{
-    border-color:rgba(100,150,255,.65);
-    box-shadow:0 0 0 4px rgba(100,150,255,.12);
-    transform:translateY(-1px);
+header p{
+    margin:8px 0 0;
+    color:#cbd5e1;
+}
+
+#theme{
+    position:absolute;
+    right:0;
+    top:0;
+    border:0;
+    border-radius:50%;
+    width:42px;
+    height:42px;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.nav-menu{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    padding:12px 18px;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.nav-menu a,
+.nav-menu button{
+    padding:10px 16px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--bg);
+    color:var(--text);
+    text-decoration:none;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.nav-menu a:hover,
+.nav-menu button:hover{
+    background:var(--text);
+    color:var(--bg);
+}
+
+.container{
+    max-width:850px;
+    margin:auto;
+    padding:25px 18px;
+}
+
+.search{
+    width:100%;
+    padding:16px 18px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    font-size:16px;
+    margin-bottom:12px;
+    outline:none;
+    background:var(--card);
+    color:var(--text);
+}
+
+.filter-favorit{
+    width:100%;
+    padding:13px;
+    margin-bottom:22px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--card);
+    color:var(--text);
+    font-size:15px;
+    cursor:pointer;
+}
+
+.filter-favorit.aktif{
+    background:var(--text);
+    color:var(--bg);
 }
 
 .kategori{
     display:flex;
     gap:8px;
     overflow-x:auto;
-    padding:4px 2px 12px;
-    scrollbar-width:none;
+    margin-bottom:22px;
+    padding-bottom:4px;
 }
 
-.kategori::-webkit-scrollbar{
-    display:none;
-}
-
-.kategori button{
+.kategori-btn{
     flex:0 0 auto;
-    white-space:nowrap;
+    padding:10px 15px;
+    border:1px solid var(--border);
     border-radius:12px;
-    padding:9px 14px;
-    transition:transform .2s ease,box-shadow .2s ease;
-}
-
-.kategori button:active{
-    transform:scale(.95);
-}
-
-#filterFavorit{
-    border-radius:12px!important;
-}
-
-@media (max-width:600px){
-    #search{
-        margin:14px 0 12px;
-        padding:13px 16px;
-        font-size:16px;
-        border-radius:14px;
-    }
-
-    .kategori{
-        margin-left:-2px;
-        margin-right:-2px;
-        padding-bottom:10px;
-    }
-
-    .kategori button{
-        padding:8px 12px;
-        font-size:14px;
-    }
-}
-
-#jumlahTools{
-    margin:8px 0 4px;
+    background:var(--card);
+    color:var(--text);
     font-size:14px;
-    opacity:.75;
+    cursor:pointer;
 }
 
-#hasilTools{
-    margin:4px 0 14px;
-    font-size:13px;
-    opacity:.65;
+.kategori-btn.aktif{
+    background:var(--text);
+    color:var(--bg);
 }
 
-#tidakDitemukan{
-    padding:30px 16px;
-    text-align:center;
-    border-radius:16px;
-    margin-top:16px;
+.terakhir{
+    display:none;
+    margin-bottom:18px;
+    padding:16px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:var(--card);
+    color:var(--text);
     font-size:15px;
-    opacity:.75;
 }
 
-body.dark #tidakDitemukan{
-    background:rgba(255,255,255,.04);
+.dashboard{
+    margin-bottom:22px;
+    padding:18px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:var(--card);
+    color:var(--text);
 }
 
-@media (max-width:600px){
-    #jumlahTools{
+.dashboard h2{
+    margin:0 0 14px;
+    font-size:18px;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.dashboard-card{
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    text-align:center;
+}
+
+.dashboard-card strong{
+    display:block;
+    font-size:24px;
+    margin-bottom:5px;
+}
+
+.dashboard-card span{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.reset-statistik{
+    width:100%;
+    margin-top:14px;
+    padding:11px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--card);
+    color:var(--text);
+    font-size:14px;
+    cursor:pointer;
+}
+
+.reset-statistik:hover{
+    background:var(--text);
+    color:var(--bg);
+}
+
+.riwayat{
+    display:none;
+    margin-bottom:22px;
+    padding:18px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:var(--card);
+    color:var(--text);
+}
+
+.riwayat-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.riwayat-header h2{
+    margin:0;
+    font-size:18px;
+}
+
+.riwayat-header button{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:7px 10px;
+    background:var(--bg);
+    color:var(--text);
+    cursor:pointer;
+}
+
+.riwayat-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.riwayat-item:last-child{
+    border-bottom:none;
+}
+
+.riwayat-item a{
+    color:var(--text);
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.riwayat-waktu{
+    color:var(--muted);
+    font-size:12px;
+}
+
+.populer{
+    margin-bottom:22px;
+    padding:18px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:var(--card);
+    color:var(--text);
+}
+
+.populer h2{
+    margin:0 0 14px;
+    font-size:18px;
+}
+
+.populer-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.populer-item:last-child{
+    border-bottom:none;
+}
+
+.populer-item a{
+    color:var(--text);
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.populer-jumlah{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.tools{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+}
+
+.tool{
+    display:block;
+    background:var(--card);
+    padding:22px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    text-decoration:none;
+    color:var(--text);
+    box-shadow:0 4px 14px rgba(0,0,0,.06);
+    transition:.2s;
+    position:relative;
+}
+
+.favorit{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:42px;
+    height:42px;
+    padding:0;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--border);
+    border-radius:50%;
+    background:var(--card);
+    color:var(--text);
+    font-size:24px;
+    line-height:1;
+    cursor:pointer;
+    z-index:10;
+}
+
+.favorit.aktif{
+    color:#f59e0b;
+}
+
+.tool:hover{
+    transform:translateY(-4px);
+    box-shadow:0 9px 22px rgba(0,0,0,.12);
+}
+
+.icon{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.tool h2{
+    margin:0 0 7px;
+    font-size:20px;
+}
+
+.tool p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+}
+
+.statistik{
+    margin-top:12px;
+    font-size:13px;
+    color:var(--muted);
+}
+
+footer{
+    text-align:center;
+    padding:30px 20px;
+    color:var(--muted);
+    font-size:14px;
+}
+
+@media(max-width:600px){
+    .nav-menu{
+        gap:8px;
+        padding:10px 12px;
+    }
+
+    .nav-menu a,
+    .nav-menu button{
+        flex:1;
+        text-align:center;
+        padding:10px 8px;
         font-size:13px;
     }
 
-    #hasilTools{
-        font-size:12px;
-        margin-bottom:12px;
+    .tools{
+        grid-template-columns:1fr;
     }
 
-    #tidakDitemukan{
-        padding:26px 14px;
-        border-radius:14px;
-    }
-}
-</style>
-
-<style id="toolku-premium">
-/* ToolKu Premium UI */
-.tool {
-    background: rgba(255,255,255,.96);
-    border: 1px solid rgba(0,0,0,.07);
-    box-shadow: 0 4px 16px rgba(0,0,0,.06);
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-}
-
-.tool:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 28px rgba(0,0,0,.11);
-    border-color: rgba(0,0,0,.12);
-}
-
-.tool:active {
-    transform: scale(.98);
-}
-
-.tool .icon {
-    transition: transform .2s ease;
-}
-
-.tool:hover .icon {
-    transform: scale(1.08);
-}
-
-.kategori button,
-#filterFavorit {
-    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
-}
-
-.kategori button:hover,
-#filterFavorit:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-}
-
-#search {
-    transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
-}
-
-#search:focus {
-    transform: translateY(-1px);
-}
-
-@media (max-width: 600px) {
-    .tool {
-        box-shadow: 0 3px 12px rgba(0,0,0,.06);
+    header h1{
+        font-size:30px;
     }
 
-    .tool:hover {
-        transform: none;
-    }
-
-    .tool:active {
-        transform: scale(.97);
-    }
-
-    .kategori button:active,
-    #filterFavorit:active {
-        transform: scale(.96);
+    #theme{
+        right:10px;
     }
 }
 </style>
-
-
-<style id="toolku-branding">
-header {
-    position: relative;
-    text-align: center;
-    padding: 28px 18px 24px;
-    margin-bottom: 18px;
-}
-
-header h1 {
-    margin: 0;
-    font-size: clamp(2rem, 8vw, 3rem);
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1.1;
-    text-shadow: 0 3px 14px rgba(0,0,0,.12);
-}
-
-header p {
-    margin: 9px auto 0;
-    max-width: 520px;
-    font-size: .98rem;
-    opacity: .72;
-    line-height: 1.5;
-}
-
-header::after {
-    content: "";
-    display: block;
-    width: 54px;
-    height: 4px;
-    margin: 16px auto 0;
-    border-radius: 999px;
-    background: currentColor;
-    opacity: .18;
-}
-
-@media (max-width: 600px) {
-    header {
-        padding: 22px 14px 18px;
-        margin-bottom: 12px;
-    }
-
-    header h1 {
-        font-size: 2rem;
-    }
-
-    header p {
-        font-size: .9rem;
-    }
+<link rel="stylesheet" href="splash.css">
+<link rel="stylesheet" href="bottom-nav.css">
+<style>
+html{
+    scroll-behavior:smooth;
 }
 </style>
-
-
 </head>
 
 <body>
+<div id="splashScreen">
+    <div class="splash-logo">TK</div>
+    <div class="splash-title">ToolKu</div>
+    <div class="splash-text">Tools sederhana, gratis, dan praktis</div>
+</div>
 
 <header>
+<div class="top">
+    <button id="theme" onclick="ubahTema()">🌙</button>
     <h1>🛠️ ToolKu</h1>
-    <p>Alat online gratis dan mudah digunakan</p>
+    <p>Alat praktis untuk kebutuhan sehari-hari</p>
+</div>
 </header>
+
+<nav class="nav-menu">
+    <a href="index.html">🏠 Beranda</a>
+    <button onclick="tampilkanFavorit()">⭐ Favorit</button>
+</nav>
 
 <div class="container">
 
+<input
+    type="text"
+    id="search"
+    class="search"
+    placeholder="🔍 Cari alat..."
+    oninput="cariTool()"
+>
 
-    <button id="modeTema" onclick="ubahTema()">🌙 Mode Gelap</button>
+<button id="filterFavorit" class="filter-favorit" onclick="tampilkanFavorit()">
+    ⭐ Favorit Saya
+</button>
 
-
-    <input
-        type="text"
-        id="search"
-        class="search"
-        placeholder="🔍 Cari alat..."
-        oninput="cariTool()"
-    >
-
-    <button id="filterFavorit" onclick="tampilkanFavorit()">⭐ Favorit Saya</button>
-
-    <div id="jumlahTools">🛠️ 0 Tools tersedia</div>
-    <div id="hasilTools">🔎 Menampilkan 0 tools</div>
-
-    <div class="kategori">
-        <button class="aktif" onclick="filterKategori('semua', this)">Semua</button>
-        <button onclick="filterKategori('utilitas', this)">🛠️ Utilitas</button>
-        <button onclick="filterKategori('foto', this)">🖼️ Foto</button>
-        <button onclick="filterKategori('keamanan', this)">🔐 Keamanan</button>
-    </div>
-
-
-
-    <div class="tools">
-        <div id="tidakDitemukan">
-            🔍 Tool tidak ditemukan
-            <small>Coba kata kunci atau kategori lain.</small>
-        </div>
-
-
-        <a href="kalkulator.html" class="tool" data-kategori="utilitas">
-            <div class="icon">🧮</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Kalkulator', this)">☆</button>
-            <h3>Kalkulator</h3>
-            <p>Hitung angka dengan mudah.</p>
-        </a>
-
-        <a href="qrcode.html" class="tool" data-kategori="utilitas">
-            <div class="icon">🔳</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Generator QR Code', this)">☆</button>
-            <h3>Generator QR Code</h3>
-            <p>Buat QR Code dengan cepat.</p>
-        </a>
-
-        <a href="resize.html" class="tool" data-kategori="foto">
-            <div class="icon">🖼️</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Resize Foto', this)">☆</button>
-            <h3>Resize Foto</h3>
-            <p>Ubah ukuran foto dengan mudah.</p>
-        </a>
-
-        <a href="catatan.html" class="tool" data-kategori="utilitas">
-            <div class="icon">📝</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Catatan', this)">☆</button>
-            <h3>Catatan</h3>
-            <p>Simpan catatan dengan mudah.</p>
-        </a>
-
-        <a href="password.html" class="tool" data-kategori="keamanan">
-            <div class="icon">🔑</div><button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('Generator Password', this)">☆</button>
-            <h3>Generator Password</h3>
-            <p>Buat password yang kuat.</p>
-        </a>
-
-    </div>
-
+<div class="kategori">
+    <button class="kategori-btn aktif" onclick="filterKategori('semua', this)">Semua</button>
+    <button class="kategori-btn" onclick="filterKategori('utilitas', this)">🛠️ Utilitas</button>
+    <button class="kategori-btn" onclick="filterKategori('foto', this)">🖼️ Foto</button>
+    <button class="kategori-btn" onclick="filterKategori('keamanan', this)">🔐 Keamanan</button>
 </div>
 
+<a id="terakhir" class="terakhir" href="#"></a>
 
-<script>
+<div id="dashboard" class="dashboard">
+    <h2>📊 Statistik ToolKu</h2>
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <strong id="totalPenggunaan">0</strong>
+            <span>Total Penggunaan</span>
+        </div>
+        <div class="dashboard-card">
+            <strong id="jumlahToolDipakai">0</strong>
+            <span>Tool Digunakan</span>
+        </div>
+    </div>
 
-function ubahTema() {
+    <button class="reset-statistik" onclick="resetStatistik()">
+        🗑️ Reset Statistik
+    </button>
+</div>
 
-    document.body.classList.toggle("dark");
+<div id="riwayat" class="riwayat">
+    <div class="riwayat-header">
+        <h2>🕘 Riwayat Penggunaan</h2>
+        <button onclick="hapusRiwayat()">Hapus</button>
+    </div>
+    <div id="daftarRiwayat"></div>
+</div>
 
-    let gelap = document.body.classList.contains("dark");
+<div id="populer" class="populer">
+    <h2>🔥 Paling Sering Digunakan</h2>
+    <div id="daftarPopuler"></div>
+</div>
 
-    localStorage.setItem("temaToolKu", gelap ? "dark" : "light");
+<div class="tools">
 
-    document.getElementById("modeTema").textContent =
-        gelap ? "☀️ Mode Terang" : "🌙 Mode Gelap";
-}
+<a href="kalkulator.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('Kalkulator')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('kalkulator.html', this)">☆</button>
+    <div class="icon">🧮</div>
+    <h2>Kalkulator</h2>
+    <p>Hitung angka dengan cepat dan mudah.</p>
+    <div class="statistik" data-statistik="Kalkulator"></div>
+</a>
 
-function muatTema() {
+<a href="qrcode.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('QR Code')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('qrcode.html', this)">☆</button>
+    <div class="icon">🔳</div>
+    <h2>QR Code</h2>
+    <p>Buat QR Code dari teks atau link.</p>
+    <div class="statistik" data-statistik="QR Code"></div>
+</a>
 
-    let tema = localStorage.getItem("temaToolKu");
+<a href="catatan.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('Catatan')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('catatan.html', this)">☆</button>
+    <div class="icon">📝</div>
+    <h2>Catatan</h2>
+    <p>Simpan catatan langsung di browser.</p>
+    <div class="statistik" data-statistik="Catatan"></div>
+</a>
 
-    if (tema === "dark") {
-        document.body.classList.add("dark");
-        document.getElementById("modeTema").textContent =
-            "☀️ Mode Terang";
-    }
-}
+<a href="password.html" class="tool" data-kategori="keamanan" onclick="catatToolTerakhir('Password')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('password.html', this)">☆</button>
+    <div class="icon">🔐</div>
+    <h2>Password</h2>
+    <p>Buat password acak yang kuat.</p>
+    <div class="statistik" data-statistik="Password"></div>
+</a>
 
-muatTema();
+<a href="resize.html" class="tool" data-kategori="foto" onclick="catatToolTerakhir('Resize Foto')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('resize.html', this)">☆</button>
+    <div class="icon">🖼️</div>
+    <h2>Resize Foto</h2>
+    <p>Ubah ukuran foto dengan mudah.</p>
+    <div class="statistik" data-statistik="Resize Foto"></div>
+</a>
 
+</div>
+</div>
 
-let modeFavorit = false;
-
-function toggleFavorit(nama, tombol) {
-
-    let favorit = JSON.parse(
-        localStorage.getItem("favoritTool") || "[]"
-    );
-
-    if (favorit.includes(nama)) {
-        favorit = favorit.filter(function(item) {
-            return item !== nama;
-        });
-    } else {
-        favorit.push(nama);
-    }
-
-    localStorage.setItem(
-        "favoritTool",
-        JSON.stringify(favorit)
-    );
-
-    tampilkanTools();
-}
-
-function tampilkanFavorit() {
-
-    modeFavorit = !modeFavorit;
-
-    let tombol = document.getElementById("filterFavorit");
-
-    if (modeFavorit) {
-        tombol.classList.add("aktif");
-    } else {
-        tombol.classList.remove("aktif");
-    }
-
-    tampilkanTools();
-}
-
-function updateJumlahTools() {
-    let jumlah = document.querySelectorAll(".tool").length;
-    document.getElementById("jumlahTools").textContent =
-        "🛠️ " + jumlah + " Tools tersedia";
-}
-
-
-
-
-function tampilkanTools() {
-
-    let input = document.getElementById("search").value.toLowerCase();
-
-    let tombolAktif = document.querySelector(".kategori button.aktif");
-
-    let kategori = tombolAktif
-        ? tombolAktif.getAttribute("onclick").match(/'([^']+)'/)[1]
-        : "semua";
-
-    let favorit = JSON.parse(
-        localStorage.getItem("favoritTool") || "[]"
-    );
-
-    let jumlahTampil = 0;
-
-    document.querySelectorAll(".tool").forEach(function(tool) {
-
-        let teks = tool.innerText.toLowerCase();
-
-        let cocokSearch = teks.includes(input);
-
-        let cocokKategori =
-            kategori === "semua" ||
-            tool.dataset.kategori === kategori;
-
-        let tombolFavorit = tool.querySelector(".favorit");
-
-        let namaFavorit = tombolFavorit
-            ? tombolFavorit.getAttribute("onclick").match(/toggleFavorit\('([^']+)'/)[1]
-            : "";
-
-        let cocokFavorit =
-            !modeFavorit ||
-            favorit.includes(namaFavorit);
-
-        if (tombolFavorit) {
-            tombolFavorit.textContent =
-                favorit.includes(namaFavorit) ? "★" : "☆";
-        }
-
-        let tampil = cocokSearch && cocokKategori && cocokFavorit;
-
-        tool.style.display = tampil ? "block" : "none";
-
-        if (tampil) {
-            jumlahTampil++;
-        }
-    });
-
-    let pesan = document.getElementById("tidakDitemukan");
-
-    if (pesan) {
-        pesan.style.display =
-            jumlahTampil === 0 ? "block" : "none";
-    }
-
-    let hasil = document.getElementById("hasilTools");
-
-    if (hasil) {
-        let total = document.querySelectorAll(".tool").length;
-        hasil.textContent =
-            "🔎 Menampilkan " + jumlahTampil + " dari " + total + " tools";
-    }
-
-    updateJumlahTools();
-}
-
-function filterKategori(kategori, tombol) {
-
-    document.querySelectorAll(".kategori button").forEach(function(btn) {
-        btn.classList.remove("aktif");
-    });
-
-    tombol.classList.add("aktif");
-
-    tampilkanTools();
-}
-
-function cariTool() {
-    tampilkanTools();
-}
-
-// Jalankan saat halaman pertama dibuka
-tampilkanTools();
-</script>
-
-
-
-
+<footer>
+© 2026 ToolKu
+</footer>
 
 <script>
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", function() {
         navigator.serviceWorker.register("./service-worker.js")
-            .then(function() {
-                console.log("ToolKu Service Worker aktif.");
+            .then(function(registration) {
+                console.log("ToolKu Service Worker aktif");
+                registration.update();
             })
             .catch(function(error) {
-                console.log("Service Worker gagal:", error);
+                console.error("Service Worker gagal:", error);
             });
     });
 }
+function aktifkanNav(tombol){
+    document.querySelectorAll(".bottom-nav a").forEach(function(item){
+        item.classList.remove("active");
+    });
+
+    tombol.classList.add("active");
+}
+
+function catatToolTerakhir(nama){
+    localStorage.setItem("toolTerakhir", nama);
+
+    let riwayat = JSON.parse(
+        localStorage.getItem("riwayatTool") || "[]"
+    );
+
+    riwayat.unshift({
+        nama: nama,
+        waktu: new Date().toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+    });
+
+    riwayat = riwayat.slice(0, 10);
+
+    localStorage.setItem(
+        "riwayatTool",
+        JSON.stringify(riwayat)
+    );
+
+    let statistik = JSON.parse(
+        localStorage.getItem("statistikTool") || "{}"
+    );
+
+    statistik[nama] = (statistik[nama] || 0) + 1;
+
+    localStorage.setItem(
+        "statistikTool",
+        JSON.stringify(statistik)
+    );
+}
+
+function resetStatistik(){
+    let yakin = confirm(
+        "Yakin ingin menghapus semua statistik penggunaan?"
+    );
+
+    if(!yakin){
+        return;
+    }
+
+    localStorage.removeItem("statistikTool");
+
+    tampilkanDashboard();
+    tampilkanStatistik();
+    tampilkanPopuler();
+
+    alert("Statistik berhasil direset.");
+}
+
+function tampilkanRiwayat(){
+    let riwayat = JSON.parse(
+        localStorage.getItem("riwayatTool") || "[]"
+    );
+
+    let kotak = document.getElementById("riwayat");
+    let daftar = document.getElementById("daftarRiwayat");
+
+    if(!kotak || !daftar){
+        return;
+    }
+
+    if(riwayat.length === 0){
+        kotak.style.display = "none";
+        return;
+    }
+
+    let tujuan = {
+        "Kalkulator": "kalkulator.html",
+        "QR Code": "qrcode.html",
+        "Catatan": "catatan.html",
+        "Password": "password.html",
+        "Resize Foto": "resize.html"
+    };
+
+    let ikon = {
+        "Kalkulator": "🧮",
+        "QR Code": "🔳",
+        "Catatan": "📝",
+        "Password": "🔐",
+        "Resize Foto": "🖼️"
+    };
+
+    kotak.style.display = "block";
+    daftar.innerHTML = "";
+
+    riwayat.forEach(function(item, index){
+        let baris = document.createElement("div");
+        baris.className = "riwayat-item";
+
+        baris.innerHTML =
+            "<a href='" + (tujuan[item.nama] || "#") + "'>" +
+            (index + 1) + ". " +
+            (ikon[item.nama] || "🛠️") + " " +
+            item.nama +
+            "</a>" +
+            "<span class='riwayat-waktu'>" +
+            item.waktu +
+            "</span>";
+
+        daftar.appendChild(baris);
+    });
+}
+
+function hapusRiwayat(){
+    if(!confirm("Hapus semua riwayat penggunaan?")){
+        return;
+    }
+
+    localStorage.removeItem("riwayatTool");
+    tampilkanRiwayat();
+}
+
+function tampilkanDashboard(){
+    let statistik = JSON.parse(
+        localStorage.getItem("statistikTool") || "{}"
+    );
+
+    let total = 0;
+    let jumlahTool = 0;
+
+    Object.keys(statistik).forEach(function(nama){
+        let jumlah = statistik[nama] || 0;
+
+        if(jumlah > 0){
+            total += jumlah;
+            jumlahTool++;
+        }
+    });
+
+    let totalElemen = document.getElementById("totalPenggunaan");
+    let jumlahElemen = document.getElementById("jumlahToolDipakai");
+
+    if(totalElemen){
+        totalElemen.textContent = total;
+    }
+
+    if(jumlahElemen){
+        jumlahElemen.textContent = jumlahTool;
+    }
+}
+
+function tampilkanPopuler(){
+    let statistik = JSON.parse(
+        localStorage.getItem("statistikTool") || "{}"
+    );
+
+    let tujuan = {
+        "Kalkulator": "kalkulator.html",
+        "QR Code": "qrcode.html",
+        "Catatan": "catatan.html",
+        "Password": "password.html",
+        "Resize Foto": "resize.html"
+    };
+
+    let ikon = {
+        "Kalkulator": "🧮",
+        "QR Code": "🔳",
+        "Catatan": "📝",
+        "Password": "🔐",
+        "Resize Foto": "🖼️"
+    };
+
+    let data = Object.keys(statistik)
+        .filter(function(nama){
+            return tujuan[nama] && statistik[nama] > 0;
+        })
+        .sort(function(a, b){
+            return statistik[b] - statistik[a];
+        })
+        .slice(0, 3);
+
+    let kotak = document.getElementById("populer");
+    let daftar = document.getElementById("daftarPopuler");
+
+    if(!kotak || !daftar){
+        return;
+    }
+
+    if(data.length === 0){
+        kotak.style.display = "none";
+        return;
+    }
+
+    kotak.style.display = "block";
+    daftar.innerHTML = "";
+
+    data.forEach(function(nama, index){
+        let item = document.createElement("div");
+        item.className = "populer-item";
+
+        item.innerHTML =
+            "<a href='" + tujuan[nama] + "'>" +
+            (index + 1) + ". " + ikon[nama] + " " + nama +
+            "</a>" +
+            "<span class='populer-jumlah'>" +
+            statistik[nama] + " kali" +
+            "</span>";
+
+        daftar.appendChild(item);
+    });
+}
+
+function tampilkanStatistik(){
+    let statistik = JSON.parse(
+        localStorage.getItem("statistikTool") || "{}"
+    );
+
+    document.querySelectorAll(".statistik").forEach(function(elemen){
+        let nama = elemen.dataset.statistik;
+        let jumlah = statistik[nama] || 0;
+
+        elemen.textContent = "📊 Digunakan " + jumlah + " kali";
+    });
+}
+
+function tampilkanToolTerakhir(){
+    let nama = localStorage.getItem("toolTerakhir");
+    let kotak = document.getElementById("terakhir");
+
+    if(!nama || !kotak){
+        return;
+    }
+
+    let tujuan = {
+        "Kalkulator": "kalkulator.html",
+        "QR Code": "qrcode.html",
+        "Catatan": "catatan.html",
+        "Password": "password.html",
+        "Resize Foto": "resize.html"
+    };
+
+    kotak.innerHTML = "🕘 Terakhir digunakan: <strong>" + nama + "</strong>";
+    kotak.href = tujuan[nama] || "#";
+    kotak.style.display = "block";
+}
+
+function filterKategori(kategori, tombol){
+    modeFavorit = false;
+
+    let filterFavorit = document.getElementById("filterFavorit");
+    if(filterFavorit){
+        filterFavorit.classList.remove("aktif");
+        filterFavorit.textContent = "⭐ Favorit Saya";
+    }
+
+    document.querySelectorAll(".kategori-btn").forEach(function(btn){
+        btn.classList.remove("aktif");
+    });
+
+    tombol.classList.add("aktif");
+
+    document.querySelectorAll(".tool").forEach(function(tool){
+        if(kategori === "semua"){
+            tool.style.display = "block";
+        } else {
+            tool.style.display =
+                tool.dataset.kategori === kategori ? "block" : "none";
+        }
+    });
+}
+
+function cariTool(){
+    let input = document.getElementById("search").value.toLowerCase();
+    let tools = document.querySelectorAll(".tool");
+
+    let kategoriAktif = document.querySelector(".kategori-btn.aktif");
+    let kategori = kategoriAktif
+        ? kategoriAktif.getAttribute("onclick").match(/'([^']+)'/)[1]
+        : "semua";
+
+    let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
+
+    tools.forEach(function(tool){
+        let text = tool.innerText.toLowerCase();
+        let cocokSearch = text.includes(input);
+        let cocokKategori =
+            kategori === "semua" ||
+            tool.dataset.kategori === kategori;
+
+        let tombolFavorit = tool.querySelector(".favorit");
+        let onclick = tombolFavorit
+            ? tombolFavorit.getAttribute("onclick")
+            : "";
+        let cocok = onclick.match(/toggleFavorit\('([^']+)'/);
+
+        let cocokFavorit =
+            !modeFavorit ||
+            (cocok && favorit.includes(cocok[1]));
+
+        tool.style.display =
+            cocokSearch && cocokKategori && cocokFavorit
+            ? "block"
+            : "none";
+    });
+}
+
+function toggleFavorit(nama, tombol){
+    let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
+
+    if(favorit.includes(nama)){
+        favorit = favorit.filter(function(item){
+            return item !== nama;
+        });
+        tombol.textContent = "☆";
+        tombol.classList.remove("aktif");
+    } else {
+        favorit.push(nama);
+        tombol.textContent = "★";
+        tombol.classList.add("aktif");
+    }
+
+    localStorage.setItem("favoritTool", JSON.stringify(favorit));
+
+    if(typeof modeFavorit !== "undefined" && modeFavorit){
+        tampilkanFavoritAktif();
+    }
+}
+
+function muatFavorit(){
+    let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
+
+    document.querySelectorAll(".favorit").forEach(function(tombol){
+        let onclick = tombol.getAttribute("onclick");
+        let cocok = onclick.match(/toggleFavorit\('([^']+)'/);
+
+        if(cocok && favorit.includes(cocok[1])){
+            tombol.textContent = "★";
+            tombol.classList.add("aktif");
+        }
+    });
+}
+
+muatFavorit();
+
+let modeFavorit = false;
+
+function tampilkanFavoritAktif(){
+    let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
+
+    document.querySelectorAll(".tool").forEach(function(tool){
+        let tombolFavorit = tool.querySelector(".favorit");
+        let onclick = tombolFavorit ? tombolFavorit.getAttribute("onclick") : "";
+        let cocok = onclick.match(/toggleFavorit\('([^']+)'/);
+
+        tool.style.display =
+            cocok && favorit.includes(cocok[1]) ? "block" : "none";
+    });
+}
+
+function tampilkanFavorit(){
+    modeFavorit = !modeFavorit;
+
+    let tombol = document.getElementById("filterFavorit");
+    let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
+
+    document.querySelectorAll(".tool").forEach(function(tool){
+        let tombolFavorit = tool.querySelector(".favorit");
+        let onclick = tombolFavorit ? tombolFavorit.getAttribute("onclick") : "";
+        let cocok = onclick.match(/toggleFavorit\('([^']+)'/);
+
+        if(modeFavorit){
+            tool.style.display =
+                cocok && favorit.includes(cocok[1]) ? "block" : "none";
+        } else {
+            tool.style.display = "block";
+        }
+    });
+
+    tombol.classList.toggle("aktif", modeFavorit);
+    tombol.textContent = modeFavorit ? "⭐ Semua Tool" : "⭐ Favorit Saya";
+
+    let navFavorit = document.querySelector(".nav-menu button");
+
+    if(navFavorit){
+        navFavorit.classList.toggle("aktif", modeFavorit);
+        navFavorit.textContent = modeFavorit ? "⭐ Semua Tool" : "⭐ Favorit";
+    }
+}
+
+function ubahTema(){
+    document.body.classList.toggle("dark");
+
+    let gelap = document.body.classList.contains("dark");
+
+    localStorage.setItem("tema", gelap ? "dark" : "light");
+
+    let tombol=document.getElementById("theme");
+
+    tombol.textContent = gelap ? "☀️" : "🌙";
+}
+
+function terapkanTema(){
+    let gelap = localStorage.getItem("tema") === "dark";
+
+    document.body.classList.toggle("dark", gelap);
+
+    let tombol = document.getElementById("theme");
+
+    if(tombol){
+        tombol.textContent = gelap ? "☀️" : "🌙";
+    }
+}
+
+terapkanTema();
+tampilkanRiwayat();
+tampilkanDashboard();
+tampilkanStatistik();
+tampilkanPopuler();
+tampilkanToolTerakhir();
+
+window.addEventListener("pageshow", terapkanTema);
+</script>
+
+<nav class="bottom-nav">
+    <a href="javascript:window.scrollTo({top:0, behavior:'smooth'})" class="active" onclick="aktifkanNav(this)">
+        <span>🏠</span>
+        Beranda
+    </a>
+    <a href="javascript:tampilkanFavorit()" onclick="aktifkanNav(this)">
+        <span>⭐</span>
+        Favorit
+    </a>
+    <a href="#riwayat" onclick="aktifkanNav(this)">
+        <span>🕘</span>
+        Riwayat
+    </a>
+    <a href="#dashboard" onclick="aktifkanNav(this)">
+        <span>📊</span>
+        Statistik
+    </a>
+</nav>
+<script>
+const bagianNav = [
+    {id: "dashboard", index: 3},
+    {id: "riwayat", index: 2}
+];
+
+const observerNav = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+        if(entry.isIntersecting){
+            const index = entry.target.dataset.navIndex;
+            document.querySelectorAll(".bottom-nav a").forEach(function(item, i){
+                item.classList.toggle("active", i == index);
+            });
+        }
+    });
+}, {threshold: 0.35});
+
+bagianNav.forEach(function(item){
+    const el = document.getElementById(item.id);
+    if(el){
+        el.dataset.navIndex = item.index;
+        observerNav.observe(el);
+    }
+});
 </script>
 
 </body>
 </html>
+
+
+<script>
+window.addEventListener("load", function(){
+    setTimeout(function(){
+        const splash = document.getElementById("splashScreen");
+        if(splash){
+            splash.classList.add("hide");
+        }
+    }, 700);
+});
+</script>
+
