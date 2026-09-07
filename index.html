@@ -161,13 +161,13 @@ header p{
 
 .terakhir{
     display:none;
-    margin-bottom:18px;
-    padding:16px;
+    margin-bottom:10px;
+    padding:10px 12px;
     border:1px solid var(--border);
-    border-radius:14px;
+    border-radius:10px;
     background:var(--card);
     color:var(--text);
-    font-size:15px;
+    font-size:13px;
 }
 
 .dashboard{
@@ -411,6 +411,12 @@ footer{
 
     .tools{
         grid-template-columns:1fr;
+        gap:12px;
+    }
+
+    .tool{
+        padding:18px;
+        border-radius:16px;
     }
 
     header h1{
@@ -460,10 +466,6 @@ html{
     placeholder="🔍 Cari alat..."
     oninput="cariTool()"
 >
-
-<button id="filterFavorit" class="filter-favorit" onclick="tampilkanFavorit()">
-    ⭐ Favorit Saya
-</button>
 
 <div class="kategori">
     <button class="kategori-btn aktif" onclick="filterKategori('semua', this)">Semua</button>
@@ -574,6 +576,14 @@ function aktifkanNav(tombol){
 
     tombol.classList.add("active");
 }
+
+window.addEventListener("scroll", function(){
+    if(window.scrollY < 50){
+        document.querySelectorAll(".bottom-nav a").forEach(function(item, index){
+            item.classList.toggle("active", index === 0);
+        });
+    }
+});
 
 function catatToolTerakhir(nama){
     localStorage.setItem("toolTerakhir", nama);
@@ -930,7 +940,6 @@ function tampilkanFavoritAktif(){
 function tampilkanFavorit(){
     modeFavorit = !modeFavorit;
 
-    let tombol = document.getElementById("filterFavorit");
     let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
 
     document.querySelectorAll(".tool").forEach(function(tool){
@@ -945,9 +954,6 @@ function tampilkanFavorit(){
             tool.style.display = "block";
         }
     });
-
-    tombol.classList.toggle("aktif", modeFavorit);
-    tombol.textContent = modeFavorit ? "⭐ Semua Tool" : "⭐ Favorit Saya";
 
     let navFavorit = document.querySelector(".nav-menu button");
 
@@ -1016,6 +1022,13 @@ const bagianNav = [
 ];
 
 const observerNav = new IntersectionObserver(function(entries){
+    if(window.scrollY < 50){
+        document.querySelectorAll(".bottom-nav a").forEach(function(item, i){
+            item.classList.toggle("active", i === 0);
+        });
+        return;
+    }
+
     entries.forEach(function(entry){
         if(entry.isIntersecting){
             const index = entry.target.dataset.navIndex;
