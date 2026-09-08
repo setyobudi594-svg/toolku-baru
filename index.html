@@ -514,6 +514,11 @@ html{
     <div id="daftarPopuler"></div>
 </div>
 
+<div id="pesanTidakDitemukan" style="display:none;text-align:center;padding:25px 15px;color:var(--muted);">
+    🔎 Alat tidak ditemukan<br>
+    <small>Coba kata kunci lain.</small>
+</div>
+
 <div class="tools">
 
 <a href="kalkulator.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('Kalkulator')">
@@ -889,6 +894,13 @@ function cariTool(){
             ? "block"
             : "none";
     });
+
+    let adaHasil = Array.from(tools).some(function(tool){
+        return tool.style.display !== "none";
+    });
+
+    document.getElementById("pesanTidakDitemukan").style.display =
+        adaHasil ? "none" : "block";
 }
 
 function toggleFavorit(nama, tombol){
