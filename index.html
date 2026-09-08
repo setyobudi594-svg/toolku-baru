@@ -851,7 +851,9 @@ function filterKategori(kategori, tombol){
 
     tombol.classList.add("aktif");
 
-    document.querySelectorAll(".tool").forEach(function(tool){
+    let tools = document.querySelectorAll(".tool");
+
+    tools.forEach(function(tool){
         if(kategori === "semua"){
             tool.style.display = "block";
         } else {
@@ -859,6 +861,13 @@ function filterKategori(kategori, tombol){
                 tool.dataset.kategori === kategori ? "block" : "none";
         }
     });
+
+    let adaHasil = Array.from(tools).some(function(tool){
+        return tool.style.display !== "none";
+    });
+
+    document.getElementById("pesanTidakDitemukan").style.display =
+        adaHasil ? "none" : "block";
 }
 
 function cariTool(){
