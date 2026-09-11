@@ -498,6 +498,67 @@ html{
     scroll-behavior:smooth;
 }
 </style>
+
+<style id="tren-statistik-css">
+.tren-statistik-card{
+    margin-top:14px;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:var(--card);
+}
+.tren-statistik-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+.tren-statistik-title{
+    font-weight:700;
+}
+.tren-statistik-info{
+    margin-top:5px;
+    font-size:12px;
+    opacity:.7;
+}
+.tren-statistik-chart{
+    height:150px;
+    display:flex;
+    align-items:flex-end;
+    gap:6px;
+    margin-top:18px;
+}
+.tren-bar-wrap{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    align-items:center;
+    gap:5px;
+}
+.tren-bar{
+    width:100%;
+    max-width:24px;
+    min-height:4px;
+    border-radius:7px 7px 3px 3px;
+    background:var(--accent,#2563eb);
+    opacity:.85;
+    transition:height .4s ease;
+}
+.tren-label{
+    font-size:9px;
+    opacity:.65;
+}
+.tren-change{
+    font-size:13px;
+    font-weight:700;
+}
+.tren-naik{color:#16a34a}
+.tren-turun{color:#dc2626}
+.tren-stabil{opacity:.7}
+</style>
+
 </head>
 
 <body>
@@ -540,7 +601,19 @@ html{
 <a id="terakhir" class="terakhir" href="#"></a>
 
 <div id="dashboard" class="dashboard">
-    <h2>📊 Statistik ToolKu</h2>
+    <h2>📊 Statistik ToolKu</div>
+
+<div id="trenStatistikToolKu" class="tren-statistik-card">
+    <div class="tren-statistik-head">
+        <div>
+            <div class="tren-statistik-title">📈 Tren Penggunaan</div>
+            <div class="tren-statistik-info">Aktivitas penggunaan tool dalam 7 hari terakhir</div>
+        </div>
+        <div id="trenPerubahanToolKu" class="tren-change tren-stabil">—</div>
+    </div>
+    <div id="trenGrafikToolKu" class="tren-statistik-chart"></div>
+</div>
+</h2>
     <div class="dashboard-grid">
         <div class="dashboard-card">
             <strong id="totalPenggunaan">0</strong>
@@ -1909,6 +1982,98 @@ bagianNav.forEach(function(item){
 });
 </script>
 
+<script>
+
+function tampilkanTrenStatistik(){
+    const grafik = document.getElementById("trenGrafikToolKu");
+    const perubahan = document.getElementById("trenPerubahanToolKu");
+
+    if(!grafik || !perubahan) return;
+
+    let log = [];
+    try{
+        log = JSON.parse(localStorage.getItem("logPenggunaanTool") || "[]");
+    }catch(error){
+        log = [];
+    }
+
+    const sekarang = new Date();
+    const hari = [];
+
+    for(let i=6;i>=0;i--){
+        const d = new Date(sekarang);
+        d.setHours(0,0,0,0);
+        d.setDate(d.getDate()-i);
+
+        const berikutnya = new Date(d);
+        berikutnya.setDate(berikutnya.getDate()+1);
+
+        const jumlah = log.filter(item=>{
+            const waktu = new Date(
+                item.waktu || item.timestamp || item.tanggal || item
+            );
+            return !isNaN(waktu) && waktu >= d && waktu < berikutnya;
+        }).length;
+
+        hari.push({
+            tanggal:d,
+            jumlah:jumlah
+        });
+    }
+
+    const maksimum = Math.max(...hari.map(x=>x.jumlah),1);
+
+    grafik.innerHTML = hari.map(item=>{
+        const tinggi = Math.max((item.jumlah/maksimum)*100,3);
+        const label = item.tanggal.toLocaleDateString("id-ID",{
+            weekday:"short"
+        }).replace(".","");
+
+        return `
+            <div class="tren-bar-wrap">
+                <div class="tren-bar"
+                     style="height:${tinggi}%"
+                     title="${item.jumlah} penggunaan">
+                </div>
+                <div class="tren-label">${label}</div>
+            </div>
+        `;
+    }).join("");
+
+    const tigaHariTerakhir = hari.slice(-3)
+        .reduce((a,b)=>a+b.jumlah,0);
+
+    const tigaHariSebelumnya = hari.slice(0,3)
+        .reduce((a,b)=>a+b.jumlah,0);
+
+    if(tigaHariSebelumnya === 0 && tigaHariTerakhir > 0){
+        perubahan.textContent = "↑ Baru aktif";
+        perubahan.className = "tren-change tren-naik";
+    }else if(tigaHariSebelumnya === 0){
+        perubahan.textContent = "— Stabil";
+        perubahan.className = "tren-change tren-stabil";
+    }else{
+        const persen = Math.round(
+            ((tigaHariTerakhir-tigaHariSebelumnya) /
+            tigaHariSebelumnya) * 100
+        );
+
+        if(persen > 0){
+            perubahan.textContent = "↑ " + persen + "%";
+            perubahan.className = "tren-change tren-naik";
+        }else if(persen < 0){
+            perubahan.textContent = "↓ " + Math.abs(persen) + "%";
+            perubahan.className = "tren-change tren-turun";
+        }else{
+            perubahan.textContent = "— 0%";
+            perubahan.className = "tren-change tren-stabil";
+        }
+    }
+}
+
+tampilkanTrenStatistik();
+
+</script>
 </body>
 </html>
 
