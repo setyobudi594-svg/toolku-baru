@@ -496,6 +496,10 @@ html{
         </div>
     </div>
 
+    <div id="toolTerpopulerDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;text-align:center;color:var(--text);">
+        🔥 Terpopuler: <strong>Belum ada penggunaan</strong>
+    </div>
+
     <button class="reset-statistik" onclick="resetStatistik()">
         🗑️ Reset Statistik
     </button>
@@ -749,6 +753,26 @@ function tampilkanDashboard(){
 
     if(jumlahElemen){
         jumlahElemen.textContent = jumlahTool;
+    }
+
+    let terpopulerElemen = document.getElementById("toolTerpopulerDashboard");
+
+    if(terpopulerElemen){
+        let namaTerpopuler = null;
+        let jumlahTerpopuler = 0;
+
+        Object.keys(statistik).forEach(function(nama){
+            let jumlah = statistik[nama] || 0;
+
+            if(jumlah > jumlahTerpopuler){
+                namaTerpopuler = nama;
+                jumlahTerpopuler = jumlah;
+            }
+        });
+
+        terpopulerElemen.innerHTML = namaTerpopuler
+            ? "🔥 Terpopuler: <strong>" + namaTerpopuler + "</strong> — " + jumlahTerpopuler + " kali"
+            : "🔥 Terpopuler: <strong>Belum ada penggunaan</strong>";
     }
 }
 
