@@ -595,6 +595,17 @@ html{
     <button id="importStatistik" type="button" onclick="document.getElementById('fileImportStatistik').click()" style="width:100%;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
         📥 Import Statistik
     </button>
+    
+    <button id="backupSemuaData" type="button" onclick="backupSemuaData()" style="width:100%;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
+        📦 Backup Semua Data
+    </button>
+
+    <button id="restoreSemuaData" type="button" onclick="document.getElementById('fileRestoreSemuaData').click()" style="width:100%;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
+        ♻️ Restore Semua Data
+    </button>
+
+    <input id="fileRestoreSemuaData" type="file" accept=".json,application/json" style="display:none;" onchange="restoreSemuaData(this)">
+
     <input id="fileImportStatistik" type="file" accept=".json,application/json" style="display:none;" onchange="importStatistik(this)">
 
 
@@ -848,6 +859,111 @@ function importStatistik(input){
 
         }catch(error){
             alert("❌ File JSON tidak dapat dibaca.");
+            input.value = "";
+        }
+    };
+
+    reader.readAsText(file);
+}
+
+
+function backupSemuaData(){
+    let data = {
+        versi: 1,
+        waktuBackup: new Date().toISOString(),
+        data: {
+            favoritTool: localStorage.getItem("favoritTool"),
+            logPenggunaanTool: localStorage.getItem("logPenggunaanTool"),
+            riwayatTool: localStorage.getItem("riwayatTool"),
+            statistikTool: localStorage.getItem("statistikTool"),
+            tema: localStorage.getItem("tema"),
+            toolTerakhir: localStorage.getItem("toolTerakhir")
+        }
+    };
+
+    let blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        {type:"application/json"}
+    );
+
+    let url = URL.createObjectURL(blob);
+    let link = document.createElement("a");
+
+    link.href = url;
+    link.download = "toolku-backup-" +
+        new Date().toISOString().slice(0,10) +
+        ".json";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    alert("✅ Semua data ToolKu berhasil dibackup.");
+}
+
+function restoreSemuaData(input){
+    let file = input.files && input.files[0];
+
+    if(!file){
+        return;
+    }
+
+    let reader = new FileReader();
+
+    reader.onload = function(e){
+        try{
+            let backup = JSON.parse(e.target.result);
+
+            if(
+                !backup ||
+                typeof backup !== "object" ||
+                backup.versi !== 1 ||
+                !backup.data ||
+                typeof backup.data !== "object"
+            ){
+                alert("❌ File backup ToolKu tidak valid.");
+                input.value = "";
+                return;
+            }
+
+            if(!confirm(
+                "Restore semua data ToolKu?\n\n" +
+                "Data saat ini akan diganti dengan data dari backup."
+            )){
+                input.value = "";
+                return;
+            }
+
+            let keys = [
+                "favoritTool",
+                "logPenggunaanTool",
+                "riwayatTool",
+                "statistikTool",
+                "tema",
+                "toolTerakhir"
+            ];
+
+            keys.forEach(function(key){
+                if(Object.prototype.hasOwnProperty.call(backup.data, key)){
+                    let value = backup.data[key];
+
+                    if(value === null || value === undefined){
+                        localStorage.removeItem(key);
+                    }else{
+                        localStorage.setItem(key, value);
+                    }
+                }
+            });
+
+            alert("✅ Semua data ToolKu berhasil direstore.");
+            input.value = "";
+
+            location.reload();
+
+        }catch(error){
+            alert("❌ File backup tidak dapat dibaca.");
             input.value = "";
         }
     };
