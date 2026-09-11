@@ -837,6 +837,34 @@ function pilihPeriodeStatistik(periode){
     tampilkanDashboard();
 }
 
+function animasiAngkaStatistik(elemen, nilaiAkhir){
+    if(!elemen){
+        return;
+    }
+
+    let nilai = 0;
+    let target = Number(nilaiAkhir) || 0;
+    let langkah = Math.max(1, Math.ceil(target / 20));
+
+    elemen.textContent = "0";
+
+    function jalankan(){
+        nilai += langkah;
+
+        if(nilai >= target){
+            nilai = target;
+        }
+
+        elemen.textContent = nilai;
+
+        if(nilai < target){
+            requestAnimationFrame(jalankan);
+        }
+    }
+
+    jalankan();
+}
+
 function tampilkanDashboard(){
     let statistik = ambilStatistikPeriode(periodeStatistikAktif);
 
@@ -856,11 +884,11 @@ function tampilkanDashboard(){
     let jumlahElemen = document.getElementById("jumlahToolDipakai");
 
     if(totalElemen){
-        totalElemen.textContent = total;
+        animasiAngkaStatistik(totalElemen, total);
     }
 
     if(jumlahElemen){
-        jumlahElemen.textContent = jumlahTool;
+        animasiAngkaStatistik(jumlahElemen, jumlahTool);
     }
 
     let statistikKategoriElemen = document.getElementById("daftarStatistikKategori");
