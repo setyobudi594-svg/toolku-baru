@@ -946,12 +946,18 @@ function tampilkanDashboard(){
                     "<strong>" + jumlah + "</strong>" +
                     "</div>" +
                     "<div style='height:8px;border-radius:8px;background:var(--border);overflow:hidden;'>" +
-                    "<div style='width:" + persen + "%;height:100%;border-radius:8px;background:currentColor;transition:width .3s ease;'></div>" +
+                    "<div class='bar-grafik-tool' data-persen='" + persen + "' style='width:0%;height:100%;border-radius:8px;background:currentColor;transition:width .5s ease;'></div>" +
                     "</div>" +
                     "</div>";
             }).join("");
         }
     }
+
+    setTimeout(function(){
+        document.querySelectorAll(".bar-grafik-tool").forEach(function(bar){
+            bar.style.width = bar.dataset.persen + "%";
+        });
+    }, 50);
 
     let rankingToolElemen = document.getElementById("daftarRankingTool");
 
