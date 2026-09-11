@@ -504,6 +504,13 @@ html{
         </div>
     </div>
 
+    <div id="filterPeriodeStatistik" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+        <button type="button" onclick="pilihPeriodeStatistik('hari')" class="periode-btn aktif">Hari Ini</button>
+        <button type="button" onclick="pilihPeriodeStatistik('7hari')" class="periode-btn">7 Hari</button>
+        <button type="button" onclick="pilihPeriodeStatistik('30hari')" class="periode-btn">30 Hari</button>
+        <button type="button" onclick="pilihPeriodeStatistik('semua')" class="periode-btn">Semua</button>
+    </div>
+
     <div id="toolTerpopulerDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;text-align:center;color:var(--text);">
         🔥 Terpopuler: <strong>Belum ada penggunaan</strong>
         <div style="margin-top:10px;height:8px;border-radius:8px;background:var(--border);overflow:hidden;">
@@ -634,7 +641,26 @@ window.addEventListener("scroll", function(){
     }
 });
 
+function catatWaktuPenggunaan(nama){
+    let log = JSON.parse(
+        localStorage.getItem("logPenggunaanTool") || "[]"
+    );
+
+    log.unshift({
+        nama: nama,
+        waktu: new Date().toISOString()
+    });
+
+    log = log.slice(0, 500);
+
+    localStorage.setItem(
+        "logPenggunaanTool",
+        JSON.stringify(log)
+    );
+}
+
 function catatToolTerakhir(nama){
+    catatWaktuPenggunaan(nama);
     localStorage.setItem("toolTerakhir", nama);
 
     let riwayat = JSON.parse(
@@ -760,10 +786,59 @@ function hapusRiwayat(){
     tampilkanRiwayat();
 }
 
-function tampilkanDashboard(){
-    let statistik = JSON.parse(
+let periodeStatistikAktif = "hari";
+
+function ambilStatistikPeriode(periode){
+    let semuaStatistik = JSON.parse(
         localStorage.getItem("statistikTool") || "{}"
     );
+
+    if(periode === "semua"){
+        return semuaStatistik;
+    }
+
+    let log = JSON.parse(
+        localStorage.getItem("logPenggunaanTool") || "[]"
+    );
+
+    let sekarang = Date.now();
+    let batas = periode === "hari"
+        ? sekarang - (24 * 60 * 60 * 1000)
+        : sekarang - (parseInt(periode) * 24 * 60 * 60 * 1000);
+
+    let hasil = {};
+
+    log.forEach(function(item){
+        let waktu = new Date(item.waktu).getTime();
+
+        if(!isNaN(waktu) && waktu >= batas && waktu <= sekarang){
+            hasil[item.nama] = (hasil[item.nama] || 0) + 1;
+        }
+    });
+
+    return hasil;
+}
+
+function pilihPeriodeStatistik(periode){
+    periodeStatistikAktif = periode;
+
+    document.querySelectorAll(".periode-btn").forEach(function(btn){
+        btn.classList.remove("aktif");
+    });
+
+    let tombolAktif = document.querySelector(
+        ".periode-btn[onclick=\"pilihPeriodeStatistik('" + periode + "')\"]"
+    );
+
+    if(tombolAktif){
+        tombolAktif.classList.add("aktif");
+    }
+
+    tampilkanDashboard();
+}
+
+function tampilkanDashboard(){
+    let statistik = ambilStatistikPeriode(periodeStatistikAktif);
 
     let total = 0;
     let jumlahTool = 0;
