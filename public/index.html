@@ -592,6 +592,12 @@ html{
         📤 Export Statistik
     </button>
 
+    <button id="importStatistik" type="button" onclick="document.getElementById('fileImportStatistik').click()" style="width:100%;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
+        📥 Import Statistik
+    </button>
+    <input id="fileImportStatistik" type="file" accept=".json,application/json" style="display:none;" onchange="importStatistik(this)">
+
+
     <button class="reset-statistik" onclick="resetStatistik()">
         🗑️ Reset Statistik
     </button>
@@ -781,6 +787,72 @@ function exportStatistik(){
     link.remove();
 
     URL.revokeObjectURL(url);
+}
+
+function importStatistik(input){
+    let file = input.files && input.files[0];
+
+    if(!file){
+        return;
+    }
+
+    let reader = new FileReader();
+
+    reader.onload = function(e){
+        try{
+            let data = JSON.parse(e.target.result);
+
+            if(
+                !data ||
+                typeof data !== "object" ||
+                !data.statistikTool ||
+                !Array.isArray(data.logPenggunaanTool)
+            ){
+                alert("❌ File statistik tidak valid.");
+                input.value = "";
+                return;
+            }
+
+            if(!confirm("Import statistik ini? Data statistik saat ini akan diganti.")){
+                input.value = "";
+                return;
+            }
+
+            localStorage.setItem(
+                "statistikTool",
+                JSON.stringify(data.statistikTool)
+            );
+
+            localStorage.setItem(
+                "logPenggunaanTool",
+                JSON.stringify(data.logPenggunaanTool)
+            );
+
+            if(Array.isArray(data.riwayatTool)){
+                localStorage.setItem(
+                    "riwayatTool",
+                    JSON.stringify(data.riwayatTool)
+                );
+            }
+
+            alert("✅ Statistik berhasil diimport.");
+            input.value = "";
+
+            if(typeof tampilkanDashboard === "function"){
+                tampilkanDashboard();
+            }
+
+            if(typeof tampilkanRiwayat === "function"){
+                tampilkanRiwayat();
+            }
+
+        }catch(error){
+            alert("❌ File JSON tidak dapat dibaca.");
+            input.value = "";
+        }
+    };
+
+    reader.readAsText(file);
 }
 
 function resetStatistik(){
