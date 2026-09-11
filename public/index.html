@@ -1669,10 +1669,13 @@ function tampilkanDashboard(){
                     index === 1 ? "🥈" :
                     index === 2 ? "🥉" : "";
 
-                return "<div style='display:flex;justify-content:space-between;align-items:center;margin:7px 0;gap:10px;'>" +
+                return "<button type='button' class='ranking-tool-interaktif' data-tool-nama='" +
+                    nama.replace(/"/g, "&quot;") +
+                    "' onclick='bukaToolDariRanking(this.dataset.toolNama)' " +
+                    "style='width:100%;display:flex;justify-content:space-between;align-items:center;margin:7px 0;padding:9px 10px;gap:10px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;text-align:left;'>" +
                     "<span>" + ikon + " " + (index + 1) + ". " + nama + "</span>" +
-                    "<strong>" + statistik[nama] + " kali</strong>" +
-                    "</div>";
+                    "<strong>" + statistik[nama] + " kali ›</strong>" +
+                    "</button>";
             }).join("");
         }
     }
@@ -2267,6 +2270,65 @@ function tampilkanDashboardRingkas(){
 }
 
 tampilkanDashboardRingkas();
+
+</script>
+<script id="ranking-tool-interaktif">
+
+function bukaToolDariRanking(namaTool){
+    if(!namaTool){
+        return;
+    }
+
+    const kandidat = Array.from(
+        document.querySelectorAll(
+            "[data-tool], [data-nama-tool], .tool-card, .kartu-tool, button"
+        )
+    );
+
+    const ditemukan = kandidat.find(function(el){
+        const teks = (
+            el.dataset.tool ||
+            el.dataset.namaTool ||
+            el.textContent ||
+            ""
+        ).trim().toLowerCase();
+
+        return teks === namaTool.trim().toLowerCase() ||
+               teks.includes(namaTool.trim().toLowerCase());
+    });
+
+    if(ditemukan){
+        ditemukan.scrollIntoView({
+            behavior:"smooth",
+            block:"center"
+        });
+
+        setTimeout(function(){
+            if(typeof ditemukan.click === "function"){
+                ditemukan.click();
+            }
+        },300);
+
+        return;
+    }
+
+    const semuaTeks = Array.from(
+        document.querySelectorAll("body *")
+    ).find(function(el){
+        return el.children.length === 0 &&
+               el.textContent.trim().toLowerCase() ===
+               namaTool.trim().toLowerCase();
+    });
+
+    if(semuaTeks){
+        semuaTeks.scrollIntoView({
+            behavior:"smooth",
+            block:"center"
+        });
+    }else{
+        alert("Tool \"" + namaTool + "\" tidak ditemukan.");
+    }
+}
 
 </script>
 </body>
