@@ -662,7 +662,12 @@ function tampilkanRiwayat(){
     }
 
     if(riwayat.length === 0){
-        kotak.style.display = "none";
+        kotak.style.display = "block";
+        daftar.innerHTML =
+            "<div style='text-align:center;padding:18px 12px;color:var(--muted);'>" +
+            "🕘 Belum ada riwayat penggunaan<br>" +
+            "<small>Gunakan salah satu alat untuk melihat riwayat di sini.</small>" +
+            "</div>";
         return;
     }
 
