@@ -442,6 +442,35 @@ footer{
 body{
     padding-bottom:90px;
 }
+
+<style id="grafik-premium">
+.bar-grafik-tool{
+    position:relative;
+    overflow:hidden;
+}
+
+.bar-grafik-tool::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-45%;
+    width:35%;
+    height:100%;
+    background:rgba(255,255,255,.22);
+    transform:skewX(-20deg);
+    animation:shimmerGrafik 2s ease-in-out infinite;
+}
+
+@keyframes shimmerGrafik{
+    0%{
+        left:-45%;
+    }
+    60%,100%{
+        left:125%;
+    }
+}
+</style>
+
 </style>
 <link rel="stylesheet" href="splash.css">
 <link rel="stylesheet" href="bottom-nav.css">
