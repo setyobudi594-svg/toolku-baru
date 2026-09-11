@@ -180,8 +180,25 @@ header p{
 }
 
 .dashboard h2{
-    margin:0 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding-bottom:9px;
+    margin:0 0 12px;
+    border-bottom:1px solid var(--border);
+    position:relative;
     font-size:16px;
+}
+
+.dashboard h2::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-1px;
+    width:58px;
+    height:3px;
+    border-radius:3px;
+    background:currentColor;
 }
 
 .dashboard-grid{
@@ -469,6 +486,8 @@ body{
         left:125%;
     }
 }
+
+
 </style>
 
 </style>
