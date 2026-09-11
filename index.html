@@ -519,6 +519,13 @@ html{
         </div>
     </div>
 
+    <div id="rankingToolDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
+        <strong>🏆 Ranking Penggunaan Tool</strong>
+        <div id="daftarRankingTool" style="margin-top:10px;color:var(--muted);font-size:13px;">
+            Belum ada data penggunaan
+        </div>
+    </div>
+
     <button class="reset-statistik" onclick="resetStatistik()">
         🗑️ Reset Statistik
     </button>
@@ -801,6 +808,34 @@ function tampilkanDashboard(){
         });
 
         statistikKategoriElemen.innerHTML = hasilKategori.join("");
+    }
+
+    let rankingToolElemen = document.getElementById("daftarRankingTool");
+
+    if(rankingToolElemen){
+        let ranking = Object.keys(statistik)
+            .filter(function(nama){
+                return (statistik[nama] || 0) > 0;
+            })
+            .sort(function(a, b){
+                return (statistik[b] || 0) - (statistik[a] || 0);
+            });
+
+        if(ranking.length === 0){
+            rankingToolElemen.innerHTML = "Belum ada data penggunaan";
+        } else {
+            rankingToolElemen.innerHTML = ranking.map(function(nama, index){
+                let ikon =
+                    index === 0 ? "🥇" :
+                    index === 1 ? "🥈" :
+                    index === 2 ? "🥉" : "";
+
+                return "<div style='display:flex;justify-content:space-between;align-items:center;margin:7px 0;gap:10px;'>" +
+                    "<span>" + ikon + " " + (index + 1) + ". " + nama + "</span>" +
+                    "<strong>" + statistik[nama] + " kali</strong>" +
+                    "</div>";
+            }).join("");
+        }
     }
 
     let terpopulerElemen = document.getElementById("toolTerpopulerDashboard");
