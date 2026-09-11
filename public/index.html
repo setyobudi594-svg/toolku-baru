@@ -606,6 +606,13 @@ html{
 
     <input id="fileRestoreSemuaData" type="file" accept=".json,application/json" style="display:none;" onchange="restoreSemuaData(this)">
 
+    <button id="validasiBackup" type="button" onclick="document.getElementById('fileValidasiBackup').click()" style="width:100%;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
+        🔎 Cek File Backup
+    </button>
+
+    <input id="fileValidasiBackup" type="file" accept=".json,application/json" style="display:none;" onchange="validasiBackup(this)">
+
+
     <div id="backupCenter" style="margin:4px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--card);">
         <div style="font-weight:700;margin-bottom:8px;">
             🛡️ Backup Center
@@ -885,6 +892,66 @@ function importStatistik(input){
     reader.readAsText(file);
 }
 
+
+function validasiBackup(input){
+    let file = input.files && input.files[0];
+
+    if(!file){
+        return;
+    }
+
+    let reader = new FileReader();
+
+    reader.onload = function(e){
+        try{
+            let backup = JSON.parse(e.target.result);
+
+            if(
+                !backup ||
+                typeof backup !== "object" ||
+                backup.versi !== 1 ||
+                !backup.data ||
+                typeof backup.data !== "object"
+            ){
+                alert("❌ File bukan backup ToolKu versi yang didukung.");
+                input.value = "";
+                return;
+            }
+
+            let keys = [
+                "favoritTool",
+                "logPenggunaanTool",
+                "riwayatTool",
+                "statistikTool",
+                "tema",
+                "toolTerakhir"
+            ];
+
+            let ditemukan = keys.filter(function(key){
+                return Object.prototype.hasOwnProperty.call(
+                    backup.data,
+                    key
+                );
+            });
+
+            let ukuranKB = (file.size / 1024).toFixed(1);
+
+            alert(
+                "✅ Backup valid.\n\n" +
+                "Versi: " + backup.versi + "\n" +
+                "Data ditemukan: " + ditemukan.length + "/6\n" +
+                "Ukuran file: " + ukuranKB + " KB"
+            );
+
+        }catch(error){
+            alert("❌ File JSON tidak valid atau rusak.");
+        }
+
+        input.value = "";
+    };
+
+    reader.readAsText(file);
+}
 
 function updateBackupCenter(){
     let keys = [
