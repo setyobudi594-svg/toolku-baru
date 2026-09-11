@@ -519,6 +519,13 @@ html{
         </div>
     </div>
 
+    <div id="grafikPenggunaanTool" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
+        <strong>📈 Grafik Penggunaan Tool</strong>
+        <div id="barGrafikTool" style="margin-top:12px;">
+            Belum ada data penggunaan
+        </div>
+    </div>
+
     <div id="rankingToolDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
         <strong>🏆 Ranking Penggunaan Tool</strong>
         <div id="daftarRankingTool" style="margin-top:10px;color:var(--muted);font-size:13px;">
@@ -808,6 +815,39 @@ function tampilkanDashboard(){
         });
 
         statistikKategoriElemen.innerHTML = hasilKategori.join("");
+    }
+
+    let grafikToolElemen = document.getElementById("barGrafikTool");
+
+    if(grafikToolElemen){
+        let dataGrafik = Object.keys(statistik)
+            .filter(function(nama){
+                return (statistik[nama] || 0) > 0;
+            })
+            .sort(function(a, b){
+                return (statistik[b] || 0) - (statistik[a] || 0);
+            });
+
+        if(dataGrafik.length === 0){
+            grafikToolElemen.innerHTML = "Belum ada data penggunaan";
+        } else {
+            let nilaiMaksimum = statistik[dataGrafik[0]] || 1;
+
+            grafikToolElemen.innerHTML = dataGrafik.map(function(nama){
+                let jumlah = statistik[nama] || 0;
+                let persen = Math.round((jumlah / nilaiMaksimum) * 100);
+
+                return "<div style='margin:9px 0;'>" +
+                    "<div style='display:flex;justify-content:space-between;gap:10px;margin-bottom:4px;'>" +
+                    "<span>" + nama + "</span>" +
+                    "<strong>" + jumlah + "</strong>" +
+                    "</div>" +
+                    "<div style='height:8px;border-radius:8px;background:var(--border);overflow:hidden;'>" +
+                    "<div style='width:" + persen + "%;height:100%;border-radius:8px;background:currentColor;transition:width .3s ease;'></div>" +
+                    "</div>" +
+                    "</div>";
+            }).join("");
+        }
     }
 
     let rankingToolElemen = document.getElementById("daftarRankingTool");
