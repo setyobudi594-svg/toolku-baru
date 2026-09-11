@@ -1030,6 +1030,42 @@ function backupSemuaData(){
     alert("✅ Semua data ToolKu berhasil dibackup.");
 }
 
+function backupOtomatisSebelumRestore(){
+    let data = {
+        versi: 1,
+        tipe: "auto-backup-sebelum-restore",
+        waktuBackup: new Date().toISOString(),
+        data: {
+            favoritTool: localStorage.getItem("favoritTool"),
+            logPenggunaanTool: localStorage.getItem("logPenggunaanTool"),
+            riwayatTool: localStorage.getItem("riwayatTool"),
+            statistikTool: localStorage.getItem("statistikTool"),
+            tema: localStorage.getItem("tema"),
+            toolTerakhir: localStorage.getItem("toolTerakhir")
+        }
+    };
+
+    let blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        {type:"application/json"}
+    );
+
+    let url = URL.createObjectURL(blob);
+    let link = document.createElement("a");
+
+    link.href = url;
+    link.download =
+        "toolku-auto-backup-sebelum-restore-" +
+        new Date().toISOString().replace(/[:.]/g, "-") +
+        ".json";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+}
+
 function restoreSemuaData(input){
     let file = input.files && input.files[0];
 
@@ -1062,6 +1098,9 @@ function restoreSemuaData(input){
                 input.value = "";
                 return;
             }
+
+            backupOtomatisSebelumRestore();
+
 
             let keys = [
                 "favoritTool",
