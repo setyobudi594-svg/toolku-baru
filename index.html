@@ -604,13 +604,19 @@ function catatToolTerakhir(nama){
         localStorage.getItem("riwayatTool") || "[]"
     );
 
-    riwayat.unshift({
-        nama: nama,
-        waktu: new Date().toLocaleTimeString("id-ID", {
-            hour: "2-digit",
-            minute: "2-digit"
-        })
+    let waktuSekarang = new Date().toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit"
     });
+
+    if(riwayat.length > 0 && riwayat[0].nama === nama){
+        riwayat[0].waktu = waktuSekarang;
+    } else {
+        riwayat.unshift({
+            nama: nama,
+            waktu: waktuSekarang
+        });
+    }
 
     riwayat = riwayat.slice(0, 10);
 
