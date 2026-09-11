@@ -498,6 +498,10 @@ html{
 
     <div id="toolTerpopulerDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;text-align:center;color:var(--text);">
         🔥 Terpopuler: <strong>Belum ada penggunaan</strong>
+        <div style="margin-top:10px;height:8px;border-radius:8px;background:var(--border);overflow:hidden;">
+            <div id="progressToolTerpopuler" style="width:0%;height:100%;border-radius:8px;background:currentColor;transition:width .3s ease;"></div>
+        </div>
+        <small id="persentaseToolTerpopuler" style="display:block;margin-top:6px;color:var(--muted);">Belum ada data penggunaan</small>
     </div>
 
     <button class="reset-statistik" onclick="resetStatistik()">
@@ -771,8 +775,30 @@ function tampilkanDashboard(){
         });
 
         terpopulerElemen.innerHTML = namaTerpopuler
-            ? "🔥 Terpopuler: <strong>" + namaTerpopuler + "</strong> — " + jumlahTerpopuler + " kali"
-            : "🔥 Terpopuler: <strong>Belum ada penggunaan</strong>";
+            ? "🔥 Terpopuler: <strong>" + namaTerpopuler + "</strong> — " + jumlahTerpopuler + " kali" +
+              "<div style='margin-top:10px;height:8px;border-radius:8px;background:var(--border);overflow:hidden;'>" +
+              "<div id='progressToolTerpopuler' style='width:0%;height:100%;border-radius:8px;background:currentColor;transition:width .3s ease;'></div>" +
+              "</div>" +
+              "<small id='persentaseToolTerpopuler' style='display:block;margin-top:6px;color:var(--muted);'>0% dari total penggunaan</small>"
+            : "🔥 Terpopuler: <strong>Belum ada penggunaan</strong>" +
+              "<div style='margin-top:10px;height:8px;border-radius:8px;background:var(--border);overflow:hidden;'>" +
+              "<div id='progressToolTerpopuler' style='width:0%;height:100%;border-radius:8px;background:currentColor;'></div>" +
+              "</div>" +
+              "<small id='persentaseToolTerpopuler' style='display:block;margin-top:6px;color:var(--muted);'>Belum ada data penggunaan</small>";
+
+        if(namaTerpopuler && total > 0){
+            let persentase = Math.round((jumlahTerpopuler / total) * 100);
+            let progress = document.getElementById("progressToolTerpopuler");
+            let label = document.getElementById("persentaseToolTerpopuler");
+
+            if(progress){
+                progress.style.width = persentase + "%";
+            }
+
+            if(label){
+                label.textContent = persentase + "% dari total penggunaan";
+            }
+        }
     }
 }
 
