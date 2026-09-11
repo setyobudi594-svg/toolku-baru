@@ -139,7 +139,7 @@ header p{
     display:flex;
     gap:8px;
     overflow-x:auto;
-    margin-bottom:22px;
+    margin-bottom:14px;
     padding-bottom:4px;
 }
 
@@ -161,27 +161,44 @@ header p{
 
 .terakhir{
     display:none;
-    margin-bottom:18px;
-    padding:16px;
+    margin-bottom:10px;
+    padding:10px 12px;
     border:1px solid var(--border);
-    border-radius:14px;
+    border-radius:10px;
     background:var(--card);
     color:var(--text);
-    font-size:15px;
+    font-size:13px;
 }
 
 .dashboard{
-    margin-bottom:22px;
-    padding:18px;
+    margin-bottom:14px;
+    padding:14px;
     border:1px solid var(--border);
-    border-radius:16px;
+    border-radius:14px;
     background:var(--card);
     color:var(--text);
 }
 
 .dashboard h2{
-    margin:0 0 14px;
-    font-size:18px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding-bottom:9px;
+    margin:0 0 12px;
+    border-bottom:1px solid var(--border);
+    position:relative;
+    font-size:16px;
+}
+
+.dashboard h2::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-1px;
+    width:58px;
+    height:3px;
+    border-radius:3px;
+    background:currentColor;
 }
 
 .dashboard-grid{
@@ -195,6 +212,14 @@ header p{
     border:1px solid var(--border);
     border-radius:12px;
     text-align:center;
+    background:var(--card);
+    box-shadow:0 4px 12px rgba(0,0,0,.04);
+    transition:transform .2s ease, box-shadow .2s ease;
+}
+
+.dashboard-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 7px 18px rgba(0,0,0,.08);
 }
 
 .dashboard-card strong{
@@ -397,8 +422,10 @@ footer{
 
 @media(max-width:600px){
     .nav-menu{
+        display:none;
         gap:8px;
         padding:10px 12px;
+        position:static;
     }
 
     .nav-menu a,
@@ -411,6 +438,12 @@ footer{
 
     .tools{
         grid-template-columns:1fr;
+        gap:12px;
+    }
+
+    .tool{
+        padding:16px;
+        border-radius:16px;
     }
 
     header h1{
@@ -421,6 +454,42 @@ footer{
         right:10px;
     }
 }
+
+/* Ruang aman untuk bottom navigation */
+body{
+    padding-bottom:90px;
+}
+
+<style id="grafik-premium">
+.bar-grafik-tool{
+    position:relative;
+    overflow:hidden;
+}
+
+.bar-grafik-tool::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-45%;
+    width:35%;
+    height:100%;
+    background:rgba(255,255,255,.22);
+    transform:skewX(-20deg);
+    animation:shimmerGrafik 2s ease-in-out infinite;
+}
+
+@keyframes shimmerGrafik{
+    0%{
+        left:-45%;
+    }
+    60%,100%{
+        left:125%;
+    }
+}
+
+
+</style>
+
 </style>
 <link rel="stylesheet" href="splash.css">
 <link rel="stylesheet" href="bottom-nav.css">
@@ -461,10 +530,6 @@ html{
     oninput="cariTool()"
 >
 
-<button id="filterFavorit" class="filter-favorit" onclick="tampilkanFavorit()">
-    ⭐ Favorit Saya
-</button>
-
 <div class="kategori">
     <button class="kategori-btn aktif" onclick="filterKategori('semua', this)">Semua</button>
     <button class="kategori-btn" onclick="filterKategori('utilitas', this)">🛠️ Utilitas</button>
@@ -487,6 +552,46 @@ html{
         </div>
     </div>
 
+    <div id="filterPeriodeStatistik" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+        <button type="button" onclick="pilihPeriodeStatistik('hari')" class="periode-btn aktif">Hari Ini</button>
+        <button type="button" onclick="pilihPeriodeStatistik('7hari')" class="periode-btn">7 Hari</button>
+        <button type="button" onclick="pilihPeriodeStatistik('30hari')" class="periode-btn">30 Hari</button>
+        <button type="button" onclick="pilihPeriodeStatistik('semua')" class="periode-btn">Semua</button>
+    </div>
+
+    <div id="toolTerpopulerDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;text-align:center;color:var(--text);">
+        🔥 Terpopuler: <strong>Belum ada penggunaan</strong>
+        <div style="margin-top:10px;height:8px;border-radius:8px;background:var(--border);overflow:hidden;">
+            <div id="progressToolTerpopuler" style="width:0%;height:100%;border-radius:8px;background:currentColor;transition:width .3s ease;"></div>
+        </div>
+        <small id="persentaseToolTerpopuler" style="display:block;margin-top:6px;color:var(--muted);">Belum ada data penggunaan</small>
+    </div>
+
+    <div id="statistikKategori" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
+        <strong>📂 Penggunaan per Kategori</strong>
+        <div id="daftarStatistikKategori" style="margin-top:10px;color:var(--muted);font-size:13px;">
+            Belum ada data penggunaan
+        </div>
+    </div>
+
+    <div id="grafikPenggunaanTool" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
+        <strong>📈 Grafik Penggunaan Tool</strong>
+        <div id="barGrafikTool" style="margin-top:12px;">
+            Belum ada data penggunaan
+        </div>
+    </div>
+
+    <div id="rankingToolDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
+        <strong>🏆 Ranking Penggunaan Tool</strong>
+        <div id="daftarRankingTool" style="margin-top:10px;color:var(--muted);font-size:13px;">
+            Belum ada data penggunaan
+        </div>
+    </div>
+
+    <button id="exportStatistik" type="button" onclick="exportStatistik()" style="width:100%;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
+        📤 Export Statistik
+    </button>
+
     <button class="reset-statistik" onclick="resetStatistik()">
         🗑️ Reset Statistik
     </button>
@@ -503,6 +608,11 @@ html{
 <div id="populer" class="populer">
     <h2>🔥 Paling Sering Digunakan</h2>
     <div id="daftarPopuler"></div>
+</div>
+
+<div id="pesanTidakDitemukan" style="display:none;text-align:center;padding:25px 15px;color:var(--muted);">
+    🔎 Alat tidak ditemukan<br>
+    <small>Coba kata kunci lain.</small>
 </div>
 
 <div class="tools">
@@ -575,20 +685,53 @@ function aktifkanNav(tombol){
     tombol.classList.add("active");
 }
 
+window.addEventListener("scroll", function(){
+    if(window.scrollY < 50){
+        document.querySelectorAll(".bottom-nav a").forEach(function(item, index){
+            item.classList.toggle("active", index === 0);
+        });
+    }
+});
+
+function catatWaktuPenggunaan(nama){
+    let log = JSON.parse(
+        localStorage.getItem("logPenggunaanTool") || "[]"
+    );
+
+    log.unshift({
+        nama: nama,
+        waktu: new Date().toISOString()
+    });
+
+    log = log.slice(0, 500);
+
+    localStorage.setItem(
+        "logPenggunaanTool",
+        JSON.stringify(log)
+    );
+}
+
 function catatToolTerakhir(nama){
+    catatWaktuPenggunaan(nama);
     localStorage.setItem("toolTerakhir", nama);
 
     let riwayat = JSON.parse(
         localStorage.getItem("riwayatTool") || "[]"
     );
 
-    riwayat.unshift({
-        nama: nama,
-        waktu: new Date().toLocaleTimeString("id-ID", {
-            hour: "2-digit",
-            minute: "2-digit"
-        })
+    let waktuSekarang = new Date().toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit"
     });
+
+    if(riwayat.length > 0 && riwayat[0].nama === nama){
+        riwayat[0].waktu = waktuSekarang;
+    } else {
+        riwayat.unshift({
+            nama: nama,
+            waktu: waktuSekarang
+        });
+    }
 
     riwayat = riwayat.slice(0, 10);
 
@@ -607,6 +750,37 @@ function catatToolTerakhir(nama){
         "statistikTool",
         JSON.stringify(statistik)
     );
+}
+
+function exportStatistik(){
+    let data = {
+        statistikTool: JSON.parse(
+            localStorage.getItem("statistikTool") || "{}"
+        ),
+        logPenggunaanTool: JSON.parse(
+            localStorage.getItem("logPenggunaanTool") || "[]"
+        ),
+        riwayatTool: JSON.parse(
+            localStorage.getItem("riwayatTool") || "[]"
+        ),
+        waktuExport: new Date().toISOString()
+    };
+
+    let blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        {type:"application/json"}
+    );
+
+    let url = URL.createObjectURL(blob);
+    let link = document.createElement("a");
+
+    link.href = url;
+    link.download = "toolku-statistik.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
 }
 
 function resetStatistik(){
@@ -640,7 +814,12 @@ function tampilkanRiwayat(){
     }
 
     if(riwayat.length === 0){
-        kotak.style.display = "none";
+        kotak.style.display = "block";
+        daftar.innerHTML =
+            "<div style='text-align:center;padding:18px 12px;color:var(--muted);'>" +
+            "🕘 Belum ada riwayat penggunaan<br>" +
+            "<small>Gunakan salah satu alat untuk melihat riwayat di sini.</small>" +
+            "</div>";
         return;
     }
 
@@ -690,10 +869,87 @@ function hapusRiwayat(){
     tampilkanRiwayat();
 }
 
-function tampilkanDashboard(){
-    let statistik = JSON.parse(
+let periodeStatistikAktif = "hari";
+
+function ambilStatistikPeriode(periode){
+    let semuaStatistik = JSON.parse(
         localStorage.getItem("statistikTool") || "{}"
     );
+
+    if(periode === "semua"){
+        return semuaStatistik;
+    }
+
+    let log = JSON.parse(
+        localStorage.getItem("logPenggunaanTool") || "[]"
+    );
+
+    let sekarang = Date.now();
+    let batas = periode === "hari"
+        ? sekarang - (24 * 60 * 60 * 1000)
+        : sekarang - (parseInt(periode) * 24 * 60 * 60 * 1000);
+
+    let hasil = {};
+
+    log.forEach(function(item){
+        let waktu = new Date(item.waktu).getTime();
+
+        if(!isNaN(waktu) && waktu >= batas && waktu <= sekarang){
+            hasil[item.nama] = (hasil[item.nama] || 0) + 1;
+        }
+    });
+
+    return hasil;
+}
+
+function pilihPeriodeStatistik(periode){
+    periodeStatistikAktif = periode;
+
+    document.querySelectorAll(".periode-btn").forEach(function(btn){
+        btn.classList.remove("aktif");
+    });
+
+    let tombolAktif = document.querySelector(
+        ".periode-btn[onclick=\"pilihPeriodeStatistik('" + periode + "')\"]"
+    );
+
+    if(tombolAktif){
+        tombolAktif.classList.add("aktif");
+    }
+
+    tampilkanDashboard();
+}
+
+function animasiAngkaStatistik(elemen, nilaiAkhir){
+    if(!elemen){
+        return;
+    }
+
+    let nilai = 0;
+    let target = Number(nilaiAkhir) || 0;
+    let langkah = Math.max(1, Math.ceil(target / 20));
+
+    elemen.textContent = "0";
+
+    function jalankan(){
+        nilai += langkah;
+
+        if(nilai >= target){
+            nilai = target;
+        }
+
+        elemen.textContent = nilai;
+
+        if(nilai < target){
+            requestAnimationFrame(jalankan);
+        }
+    }
+
+    jalankan();
+}
+
+function tampilkanDashboard(){
+    let statistik = ambilStatistikPeriode(periodeStatistikAktif);
 
     let total = 0;
     let jumlahTool = 0;
@@ -711,11 +967,149 @@ function tampilkanDashboard(){
     let jumlahElemen = document.getElementById("jumlahToolDipakai");
 
     if(totalElemen){
-        totalElemen.textContent = total;
+        animasiAngkaStatistik(totalElemen, total);
     }
 
     if(jumlahElemen){
-        jumlahElemen.textContent = jumlahTool;
+        animasiAngkaStatistik(jumlahElemen, jumlahTool);
+    }
+
+    let statistikKategoriElemen = document.getElementById("daftarStatistikKategori");
+
+    if(statistikKategoriElemen){
+        let kategori = {
+            "🛠️ Utilitas": ["Kalkulator", "QR Code", "Catatan"],
+            "🖼️ Foto": ["Resize Foto"],
+            "🔐 Keamanan": ["Password"]
+        };
+
+        let hasilKategori = [];
+
+        Object.keys(kategori).forEach(function(namaKategori){
+            let totalKategori = 0;
+
+            kategori[namaKategori].forEach(function(namaTool){
+                totalKategori += statistik[namaTool] || 0;
+            });
+
+            hasilKategori.push(
+                "<div style='display:flex;justify-content:space-between;margin:6px 0;'>" +
+                "<span>" + namaKategori + "</span>" +
+                "<strong>" + totalKategori + " kali</strong>" +
+                "</div>"
+            );
+        });
+
+        statistikKategoriElemen.innerHTML = hasilKategori.join("");
+    }
+
+    let grafikToolElemen = document.getElementById("barGrafikTool");
+
+    if(grafikToolElemen){
+        let dataGrafik = Object.keys(statistik)
+            .filter(function(nama){
+                return (statistik[nama] || 0) > 0;
+            })
+            .sort(function(a, b){
+                return (statistik[b] || 0) - (statistik[a] || 0);
+            });
+
+        if(dataGrafik.length === 0){
+            grafikToolElemen.innerHTML = "Belum ada data penggunaan";
+        } else {
+            let nilaiMaksimum = statistik[dataGrafik[0]] || 1;
+
+            grafikToolElemen.innerHTML = dataGrafik.map(function(nama){
+                let jumlah = statistik[nama] || 0;
+                let persen = Math.round((jumlah / nilaiMaksimum) * 100);
+
+                return "<div style='margin:9px 0;'>" +
+                    "<div style='display:flex;justify-content:space-between;gap:10px;margin-bottom:4px;'>" +
+                    "<span>" + nama + "</span>" +
+                    "<strong>" + jumlah + "</strong>" +
+                    "</div>" +
+                    "<div style='height:8px;border-radius:8px;background:var(--border);overflow:hidden;'>" +
+                    "<div class='bar-grafik-tool' data-persen='" + persen + "' style='width:0%;height:100%;border-radius:8px;background:currentColor;transition:width .5s ease;'></div>" +
+                    "</div>" +
+                    "</div>";
+            }).join("");
+        }
+    }
+
+    setTimeout(function(){
+        document.querySelectorAll(".bar-grafik-tool").forEach(function(bar){
+            bar.style.width = bar.dataset.persen + "%";
+        });
+    }, 50);
+
+    let rankingToolElemen = document.getElementById("daftarRankingTool");
+
+    if(rankingToolElemen){
+        let ranking = Object.keys(statistik)
+            .filter(function(nama){
+                return (statistik[nama] || 0) > 0;
+            })
+            .sort(function(a, b){
+                return (statistik[b] || 0) - (statistik[a] || 0);
+            });
+
+        if(ranking.length === 0){
+            rankingToolElemen.innerHTML = "Belum ada data penggunaan";
+        } else {
+            rankingToolElemen.innerHTML = ranking.map(function(nama, index){
+                let ikon =
+                    index === 0 ? "🥇" :
+                    index === 1 ? "🥈" :
+                    index === 2 ? "🥉" : "";
+
+                return "<div style='display:flex;justify-content:space-between;align-items:center;margin:7px 0;gap:10px;'>" +
+                    "<span>" + ikon + " " + (index + 1) + ". " + nama + "</span>" +
+                    "<strong>" + statistik[nama] + " kali</strong>" +
+                    "</div>";
+            }).join("");
+        }
+    }
+
+    let terpopulerElemen = document.getElementById("toolTerpopulerDashboard");
+
+    if(terpopulerElemen){
+        let namaTerpopuler = null;
+        let jumlahTerpopuler = 0;
+
+        Object.keys(statistik).forEach(function(nama){
+            let jumlah = statistik[nama] || 0;
+
+            if(jumlah > jumlahTerpopuler){
+                namaTerpopuler = nama;
+                jumlahTerpopuler = jumlah;
+            }
+        });
+
+        terpopulerElemen.innerHTML = namaTerpopuler
+            ? "🔥 Terpopuler: <strong>" + namaTerpopuler + "</strong> — " + jumlahTerpopuler + " kali" +
+              "<div style='margin-top:10px;height:8px;border-radius:8px;background:var(--border);overflow:hidden;'>" +
+              "<div id='progressToolTerpopuler' style='width:0%;height:100%;border-radius:8px;background:currentColor;transition:width .3s ease;'></div>" +
+              "</div>" +
+              "<small id='persentaseToolTerpopuler' style='display:block;margin-top:6px;color:var(--muted);'>0% dari total penggunaan</small>"
+            : "🔥 Terpopuler: <strong>Belum ada penggunaan</strong>" +
+              "<div style='margin-top:10px;height:8px;border-radius:8px;background:var(--border);overflow:hidden;'>" +
+              "<div id='progressToolTerpopuler' style='width:0%;height:100%;border-radius:8px;background:currentColor;'></div>" +
+              "</div>" +
+              "<small id='persentaseToolTerpopuler' style='display:block;margin-top:6px;color:var(--muted);'>Belum ada data penggunaan</small>";
+
+        if(namaTerpopuler && total > 0){
+            let persentase = Math.round((jumlahTerpopuler / total) * 100);
+            let progress = document.getElementById("progressToolTerpopuler");
+            let label = document.getElementById("persentaseToolTerpopuler");
+
+            if(progress){
+                progress.style.width = persentase + "%";
+            }
+
+            if(label){
+                label.textContent = persentase + "% dari total penggunaan";
+            }
+        }
     }
 }
 
@@ -829,7 +1223,9 @@ function filterKategori(kategori, tombol){
 
     tombol.classList.add("aktif");
 
-    document.querySelectorAll(".tool").forEach(function(tool){
+    let tools = document.querySelectorAll(".tool");
+
+    tools.forEach(function(tool){
         if(kategori === "semua"){
             tool.style.display = "block";
         } else {
@@ -837,6 +1233,13 @@ function filterKategori(kategori, tombol){
                 tool.dataset.kategori === kategori ? "block" : "none";
         }
     });
+
+    let adaHasil = Array.from(tools).some(function(tool){
+        return tool.style.display !== "none";
+    });
+
+    document.getElementById("pesanTidakDitemukan").style.display =
+        adaHasil ? "none" : "block";
 }
 
 function cariTool(){
@@ -872,6 +1275,13 @@ function cariTool(){
             ? "block"
             : "none";
     });
+
+    let adaHasil = Array.from(tools).some(function(tool){
+        return tool.style.display !== "none";
+    });
+
+    document.getElementById("pesanTidakDitemukan").style.display =
+        adaHasil ? "none" : "block";
 }
 
 function toggleFavorit(nama, tombol){
@@ -930,7 +1340,6 @@ function tampilkanFavoritAktif(){
 function tampilkanFavorit(){
     modeFavorit = !modeFavorit;
 
-    let tombol = document.getElementById("filterFavorit");
     let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
 
     document.querySelectorAll(".tool").forEach(function(tool){
@@ -946,15 +1355,18 @@ function tampilkanFavorit(){
         }
     });
 
-    tombol.classList.toggle("aktif", modeFavorit);
-    tombol.textContent = modeFavorit ? "⭐ Semua Tool" : "⭐ Favorit Saya";
-
     let navFavorit = document.querySelector(".nav-menu button");
 
     if(navFavorit){
         navFavorit.classList.toggle("aktif", modeFavorit);
         navFavorit.textContent = modeFavorit ? "⭐ Semua Tool" : "⭐ Favorit";
     }
+
+    let bottomNav = document.querySelectorAll(".bottom-nav a");
+
+    bottomNav.forEach(function(item, index){
+        item.classList.toggle("active", modeFavorit ? index === 1 : index === 0);
+    });
 }
 
 function ubahTema(){
@@ -1016,6 +1428,13 @@ const bagianNav = [
 ];
 
 const observerNav = new IntersectionObserver(function(entries){
+    if(window.scrollY < 50){
+        document.querySelectorAll(".bottom-nav a").forEach(function(item, i){
+            item.classList.toggle("active", i === 0);
+        });
+        return;
+    }
+
     entries.forEach(function(entry){
         if(entry.isIntersecting){
             const index = entry.target.dataset.navIndex;
