@@ -559,6 +559,46 @@ html{
 .tren-stabil{opacity:.7}
 </style>
 
+
+<style id="dashboard-v2-css">
+.dashboard-ringkas{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    margin-top:14px;
+}
+.dashboard-kartu{
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:var(--card);
+    box-shadow:0 4px 14px rgba(0,0,0,.04);
+}
+.dashboard-icon{
+    font-size:22px;
+    margin-bottom:8px;
+}
+.dashboard-label{
+    font-size:11px;
+    opacity:.7;
+}
+.dashboard-nilai{
+    margin-top:3px;
+    font-size:21px;
+    font-weight:800;
+}
+.dashboard-sub{
+    margin-top:4px;
+    font-size:10px;
+    opacity:.6;
+}
+@media(max-width:360px){
+    .dashboard-ringkas{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+
 </head>
 
 <body>
@@ -602,6 +642,37 @@ html{
 
 <div id="dashboard" class="dashboard">
     <h2>📊 Statistik ToolKu</div>
+
+<div id="dashboardRingkasToolKu" class="dashboard-ringkas">
+    <div class="dashboard-kartu">
+        <div class="dashboard-icon">🚀</div>
+        <div class="dashboard-label">Total Penggunaan</div>
+        <div id="dashboardTotalToolKu" class="dashboard-nilai">0</div>
+        <div class="dashboard-sub">Semua aktivitas</div>
+    </div>
+
+    <div class="dashboard-kartu">
+        <div class="dashboard-icon">🏆</div>
+        <div class="dashboard-label">Tool Terpopuler</div>
+        <div id="dashboardPopulerToolKu" class="dashboard-nilai">—</div>
+        <div class="dashboard-sub">Paling sering digunakan</div>
+    </div>
+
+    <div class="dashboard-kartu">
+        <div class="dashboard-icon">🔥</div>
+        <div class="dashboard-label">Hari Teraktif</div>
+        <div id="dashboardAktifToolKu" class="dashboard-nilai">—</div>
+        <div class="dashboard-sub">Aktivitas tertinggi</div>
+    </div>
+
+    <div class="dashboard-kartu">
+        <div class="dashboard-icon">📈</div>
+        <div class="dashboard-label">Tren Mingguan</div>
+        <div id="dashboardTrenToolKu" class="dashboard-nilai">—</div>
+        <div class="dashboard-sub">Perbandingan 3 + 3 hari</div>
+    </div>
+</div>
+</div>
 
 <div id="trenStatistikToolKu" class="tren-statistik-card">
     <div class="tren-statistik-head">
@@ -2072,6 +2143,122 @@ function tampilkanTrenStatistik(){
 }
 
 tampilkanTrenStatistik();
+
+</script>
+<script>
+
+function tampilkanDashboardRingkas(){
+    const totalEl = document.getElementById("dashboardTotalToolKu");
+    const populerEl = document.getElementById("dashboardPopulerToolKu");
+    const aktifEl = document.getElementById("dashboardAktifToolKu");
+    const trenEl = document.getElementById("dashboardTrenToolKu");
+
+    if(!totalEl || !populerEl || !aktifEl || !trenEl) return;
+
+    let log = [];
+    try{
+        log = JSON.parse(localStorage.getItem("logPenggunaanTool") || "[]");
+    }catch(error){
+        log = [];
+    }
+
+    totalEl.textContent = log.length;
+
+    const hitungTool = {};
+
+    log.forEach(item=>{
+        const nama =
+            item.tool ||
+            item.nama ||
+            item.namaTool ||
+            item.id ||
+            "Tool";
+
+        hitungTool[nama] = (hitungTool[nama] || 0) + 1;
+    });
+
+    const ranking = Object.entries(hitungTool)
+        .sort((a,b)=>b[1]-a[1]);
+
+    if(ranking.length){
+        populerEl.textContent =
+            ranking[0][0] + " (" + ranking[0][1] + ")";
+    }else{
+        populerEl.textContent = "—";
+    }
+
+    const sekarang = new Date();
+    const dataHari = [];
+
+    for(let i=6;i>=0;i--){
+        const awal = new Date(sekarang);
+        awal.setHours(0,0,0,0);
+        awal.setDate(awal.getDate()-i);
+
+        const akhir = new Date(awal);
+        akhir.setDate(akhir.getDate()+1);
+
+        const jumlah = log.filter(item=>{
+            const waktu = new Date(
+                item.waktu ||
+                item.timestamp ||
+                item.tanggal ||
+                item
+            );
+
+            return !isNaN(waktu) &&
+                   waktu >= awal &&
+                   waktu < akhir;
+        }).length;
+
+        dataHari.push({
+            tanggal:awal,
+            jumlah:jumlah
+        });
+    }
+
+    const hariTeraktif = dataHari
+        .slice()
+        .sort((a,b)=>b.jumlah-a.jumlah)[0];
+
+    if(hariTeraktif && hariTeraktif.jumlah > 0){
+        aktifEl.textContent =
+            hariTeraktif.tanggal.toLocaleDateString(
+                "id-ID",
+                {weekday:"long"}
+            );
+    }else{
+        aktifEl.textContent = "—";
+    }
+
+    const sebelumnya = dataHari
+        .slice(0,3)
+        .reduce((total,item)=>total+item.jumlah,0);
+
+    const terbaru = dataHari
+        .slice(-3)
+        .reduce((total,item)=>total+item.jumlah,0);
+
+    if(sebelumnya === 0 && terbaru > 0){
+        trenEl.textContent = "↑ Baru aktif";
+    }else if(sebelumnya === 0){
+        trenEl.textContent = "— Stabil";
+    }else{
+        const persen = Math.round(
+            ((terbaru-sebelumnya)/sebelumnya)*100
+        );
+
+        if(persen > 0){
+            trenEl.textContent = "↑ " + persen + "%";
+        }else if(persen < 0){
+            trenEl.textContent = "↓ " + Math.abs(persen) + "%";
+        }else{
+            trenEl.textContent = "— 0%";
+        }
+    }
+}
+
+tampilkanDashboardRingkas();
 
 </script>
 </body>
