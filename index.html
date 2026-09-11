@@ -989,6 +989,12 @@ function tampilkanFavorit(){
         navFavorit.classList.toggle("aktif", modeFavorit);
         navFavorit.textContent = modeFavorit ? "⭐ Semua Tool" : "⭐ Favorit";
     }
+
+    let bottomNav = document.querySelectorAll(".bottom-nav a");
+
+    bottomNav.forEach(function(item, index){
+        item.classList.toggle("active", modeFavorit ? index === 1 : index === 0);
+    });
 }
 
 function ubahTema(){
