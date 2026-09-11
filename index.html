@@ -512,6 +512,13 @@ html{
         <small id="persentaseToolTerpopuler" style="display:block;margin-top:6px;color:var(--muted);">Belum ada data penggunaan</small>
     </div>
 
+    <div id="statistikKategori" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
+        <strong>📂 Penggunaan per Kategori</strong>
+        <div id="daftarStatistikKategori" style="margin-top:10px;color:var(--muted);font-size:13px;">
+            Belum ada data penggunaan
+        </div>
+    </div>
+
     <button class="reset-statistik" onclick="resetStatistik()">
         🗑️ Reset Statistik
     </button>
@@ -765,6 +772,35 @@ function tampilkanDashboard(){
 
     if(jumlahElemen){
         jumlahElemen.textContent = jumlahTool;
+    }
+
+    let statistikKategoriElemen = document.getElementById("daftarStatistikKategori");
+
+    if(statistikKategoriElemen){
+        let kategori = {
+            "🛠️ Utilitas": ["Kalkulator", "QR Code", "Catatan"],
+            "🖼️ Foto": ["Resize Foto"],
+            "🔐 Keamanan": ["Password"]
+        };
+
+        let hasilKategori = [];
+
+        Object.keys(kategori).forEach(function(namaKategori){
+            let totalKategori = 0;
+
+            kategori[namaKategori].forEach(function(namaTool){
+                totalKategori += statistik[namaTool] || 0;
+            });
+
+            hasilKategori.push(
+                "<div style='display:flex;justify-content:space-between;margin:6px 0;'>" +
+                "<span>" + namaKategori + "</span>" +
+                "<strong>" + totalKategori + " kali</strong>" +
+                "</div>"
+            );
+        });
+
+        statistikKategoriElemen.innerHTML = hasilKategori.join("");
     }
 
     let terpopulerElemen = document.getElementById("toolTerpopulerDashboard");
