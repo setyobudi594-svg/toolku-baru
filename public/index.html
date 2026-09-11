@@ -629,6 +629,15 @@ html{
         <div style="margin-top:6px;font-size:12px;opacity:.75;">
             ⚠️ Restore akan mengganti data saat ini dengan data dari file backup.
         </div>
+
+
+        <div id="riwayatBackupToolKu" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;">
+            Memuat riwayat backup...
+        </div>
+
+        <button id="hapusRiwayatBackup" type="button" onclick="hapusRiwayatBackup()" style="width:100%;margin-top:10px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
+            🧹 Hapus Riwayat Backup
+        </button>
     </div>
 
 
@@ -953,6 +962,87 @@ function validasiBackup(input){
     reader.readAsText(file);
 }
 
+function catatRiwayatBackup(tipe){
+    let riwayat = [];
+
+    try{
+        riwayat = JSON.parse(
+            localStorage.getItem("riwayatBackupToolKu") || "[]"
+        );
+    }catch(error){
+        riwayat = [];
+    }
+
+    riwayat.unshift({
+        tipe: tipe,
+        waktu: new Date().toISOString()
+    });
+
+    riwayat = riwayat.slice(0, 20);
+
+    localStorage.setItem(
+        "riwayatBackupToolKu",
+        JSON.stringify(riwayat)
+    );
+
+    tampilkanRiwayatBackup();
+}
+
+function tampilkanRiwayatBackup(){
+    let container = document.getElementById("riwayatBackupToolKu");
+
+    if(!container){
+        return;
+    }
+
+    let riwayat = [];
+
+    try{
+        riwayat = JSON.parse(
+            localStorage.getItem("riwayatBackupToolKu") || "[]"
+        );
+    }catch(error){
+        riwayat = [];
+    }
+
+    if(!riwayat.length){
+        container.innerHTML =
+            "🕒 Belum ada riwayat backup.";
+        return;
+    }
+
+    let html =
+        "<strong>🕒 Riwayat Backup</strong>";
+
+    riwayat.forEach(function(item){
+        let waktu = new Date(item.waktu).toLocaleString("id-ID");
+        let label =
+            item.tipe === "manual"
+                ? "📦 Backup manual"
+                : "🛡️ Auto backup sebelum restore";
+
+        html +=
+            "<div style='margin-top:6px;'>" +
+            label +
+            "<br><span style='opacity:.7;'>" +
+            waktu +
+            "</span></div>";
+    });
+
+    container.innerHTML = html;
+}
+
+function hapusRiwayatBackup(){
+    if(!confirm("Hapus semua riwayat backup?")){
+        return;
+    }
+
+    localStorage.removeItem("riwayatBackupToolKu");
+    tampilkanRiwayatBackup();
+
+    alert("✅ Riwayat backup berhasil dihapus.");
+}
+
 function updateBackupCenter(){
     let keys = [
         "favoritTool",
@@ -1026,6 +1116,7 @@ function backupSemuaData(){
     );
 
     updateBackupCenter();
+    catatRiwayatBackup("manual");
 
     alert("✅ Semua data ToolKu berhasil dibackup.");
 }
@@ -1064,6 +1155,8 @@ function backupOtomatisSebelumRestore(){
     link.remove();
 
     URL.revokeObjectURL(url);
+
+    catatRiwayatBackup("auto");
 }
 
 function restoreSemuaData(input){
@@ -1143,6 +1236,7 @@ function restoreSemuaData(input){
 }
 
 updateBackupCenter();
+tampilkanRiwayatBackup();
 
 function resetStatistik(){
     let yakin = confirm(
