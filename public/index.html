@@ -606,6 +606,25 @@ html{
 
     <input id="fileRestoreSemuaData" type="file" accept=".json,application/json" style="display:none;" onchange="restoreSemuaData(this)">
 
+    <div id="backupCenter" style="margin:4px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--card);">
+        <div style="font-weight:700;margin-bottom:8px;">
+            🛡️ Backup Center
+        </div>
+
+        <div id="statusBackupCenter" style="font-size:13px;line-height:1.6;color:var(--text);">
+            Memeriksa data ToolKu...
+        </div>
+
+        <div style="margin-top:8px;font-size:12px;opacity:.75;">
+            Backup mencakup favorit, statistik, riwayat, log penggunaan, tema, dan tool terakhir.
+        </div>
+
+        <div style="margin-top:6px;font-size:12px;opacity:.75;">
+            ⚠️ Restore akan mengganti data saat ini dengan data dari file backup.
+        </div>
+    </div>
+
+
     <input id="fileImportStatistik" type="file" accept=".json,application/json" style="display:none;" onchange="importStatistik(this)">
 
 
@@ -867,6 +886,40 @@ function importStatistik(input){
 }
 
 
+function updateBackupCenter(){
+    let keys = [
+        "favoritTool",
+        "logPenggunaanTool",
+        "riwayatTool",
+        "statistikTool",
+        "tema",
+        "toolTerakhir"
+    ];
+
+    let tersedia = 0;
+
+    keys.forEach(function(key){
+        if(localStorage.getItem(key) !== null){
+            tersedia++;
+        }
+    });
+
+    let waktu = localStorage.getItem("waktuBackupToolKu");
+    let status = document.getElementById("statusBackupCenter");
+
+    if(!status){
+        return;
+    }
+
+    let waktuText = waktu
+        ? new Date(waktu).toLocaleString("id-ID")
+        : "Belum pernah backup";
+
+    status.innerHTML =
+        "📦 Data tersedia: <strong>" + tersedia + "/" + keys.length + "</strong><br>" +
+        "🕒 Backup terakhir: <strong>" + waktuText + "</strong>";
+}
+
 function backupSemuaData(){
     let data = {
         versi: 1,
@@ -899,6 +952,13 @@ function backupSemuaData(){
     link.remove();
 
     URL.revokeObjectURL(url);
+
+    localStorage.setItem(
+        "waktuBackupToolKu",
+        new Date().toISOString()
+    );
+
+    updateBackupCenter();
 
     alert("✅ Semua data ToolKu berhasil dibackup.");
 }
@@ -957,6 +1017,11 @@ function restoreSemuaData(input){
                 }
             });
 
+            localStorage.setItem(
+                "waktuBackupToolKu",
+                new Date().toISOString()
+            );
+
             alert("✅ Semua data ToolKu berhasil direstore.");
             input.value = "";
 
@@ -970,6 +1035,8 @@ function restoreSemuaData(input){
 
     reader.readAsText(file);
 }
+
+updateBackupCenter();
 
 function resetStatistik(){
     let yakin = confirm(
