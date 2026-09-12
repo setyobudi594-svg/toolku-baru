@@ -668,6 +668,35 @@ html{
 }
 </style>
 
+
+<style id="analytics-insight-pro-css">
+#analyticsInsightPro{
+    margin:14px 0;
+    padding:16px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#f8fafc,#eef2ff);
+    border:1px solid rgba(99,102,241,.15);
+}
+.analytics-insight-title{
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+#analyticsInsightIsi{
+    font-size:14px;
+    line-height:1.55;
+}
+.analytics-insight-item{
+    margin-top:9px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.75);
+}
+.analytics-insight-value{
+    font-weight:800;
+}
+</style>
+
 </head>
 
 <body>
@@ -794,6 +823,14 @@ html{
         </div>
     </div>
 
+
+
+<div id="analyticsInsightPro">
+    <div class="analytics-insight-title">💡 Insight Analytics</div>
+    <div id="analyticsInsightIsi">
+        Belum ada data yang cukup untuk membuat insight.
+    </div>
+</div>
 
 <div id="analyticsProToolKu">
     <div class="analytics-pro-title">🏆 Top 3 Tool Terpopuler</div>
@@ -2520,6 +2557,90 @@ function tampilkanAnalyticsPro(){
 tampilkanAnalyticsPro();
 
 </script>
+
+<script id="analytics-insight-pro-js">
+function tampilkanAnalyticsInsight(){
+    const target = document.getElementById("analyticsInsightIsi");
+    if(!target) return;
+
+    let periode = typeof periodeStatistikAktif !== "undefined"
+        ? periodeStatistikAktif
+        : "hari";
+
+    let statistik = {};
+    if(typeof ambilStatistikPeriode === "function"){
+        statistik = ambilStatistikPeriode(periode) || {};
+    }
+
+    let ranking = Object.keys(statistik)
+        .filter(function(nama){
+            return Number(statistik[nama] || 0) > 0;
+        })
+        .sort(function(a,b){
+            return Number(statistik[b] || 0) - Number(statistik[a] || 0);
+        });
+
+    if(ranking.length === 0){
+        target.innerHTML = "💡 Belum ada data penggunaan pada periode ini.";
+        return;
+    }
+
+    let total = ranking.reduce(function(jumlah,nama){
+        return jumlah + Number(statistik[nama] || 0);
+    },0);
+
+    let terpopuler = ranking[0];
+    let jumlahTerpopuler = Number(statistik[terpopuler] || 0);
+    let persentase = total > 0
+        ? Math.round((jumlahTerpopuler / total) * 100)
+        : 0;
+
+    let html = "";
+
+    html += '<div class="analytics-insight-item">' +
+        '🏆 <span class="analytics-insight-value">' +
+        terpopuler +
+        '</span> menjadi tool paling populer dengan <strong>' +
+        jumlahTerpopuler +
+        ' penggunaan</strong> (' +
+        persentase +
+        '% dari total).'</div>';
+
+    if(ranking.length >= 2){
+        let kedua = ranking[1];
+        html += '<div class="analytics-insight-item">' +
+            '📊 Tool berikutnya adalah <span class="analytics-insight-value">' +
+            kedua +
+            '</span> dengan <strong>' +
+            Number(statistik[kedua] || 0) +
+            ' penggunaan</strong>.</div>';
+    }
+
+    if(ranking.length >= 3){
+        let ketiga = ranking[2];
+        html += '<div class="analytics-insight-item">' +
+            '🔥 Tiga tool teratas menyumbang <strong>' +
+            Math.round(
+                (
+                    Number(statistik[ranking[0]] || 0) +
+                    Number(statistik[ranking[1]] || 0) +
+                    Number(statistik[ranking[2]] || 0)
+                ) / total * 100
+            ) +
+            '%</strong> dari seluruh penggunaan periode ini.</div>';
+    }
+
+    html += '<div class="analytics-insight-item">' +
+        '📈 Total penggunaan pada periode ini: <strong>' +
+        total +
+        '</strong> dari <strong>' +
+        ranking.length +
+        ' tool</strong>.</div>';
+
+    target.innerHTML = html;
+}
+</script>
+
 </body>
 </html>
 
