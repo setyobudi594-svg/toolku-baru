@@ -1034,6 +1034,101 @@ html{
 }
 </style>
 
+
+<style id="analytics-interactive-v10-css">
+#analyticsInteractiveV10{
+    margin:16px 0;
+    padding:18px;
+    border:1px solid rgba(127,127,127,.18);
+    border-radius:18px;
+    background:var(--card-bg,#fff);
+}
+.analytics-v10-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+}
+.analytics-v10-title{
+    font-size:17px;
+    font-weight:800;
+}
+.analytics-v10-subtitle{
+    margin-top:4px;
+    font-size:12px;
+    opacity:.68;
+}
+.analytics-v10-period{
+    padding:7px 11px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+    background:rgba(127,127,127,.10);
+}
+.analytics-v10-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+.analytics-v10-card{
+    padding:13px;
+    border-radius:13px;
+    background:rgba(127,127,127,.07);
+}
+.analytics-v10-label{
+    font-size:11px;
+    opacity:.68;
+}
+.analytics-v10-value{
+    margin-top:5px;
+    font-size:19px;
+    font-weight:800;
+}
+.analytics-v10-top{
+    margin-top:14px;
+    padding:13px;
+    border-radius:13px;
+    background:rgba(127,127,127,.07);
+}
+.analytics-v10-top-title{
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:9px;
+}
+.analytics-v10-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid rgba(127,127,127,.12);
+    font-size:12px;
+}
+.analytics-v10-row:last-child{
+    border-bottom:0;
+}
+.analytics-v10-rank{
+    font-weight:800;
+}
+.analytics-v10-number{
+    font-weight:700;
+}
+.analytics-v10-insight{
+    margin-top:12px;
+    padding:12px;
+    border-radius:13px;
+    font-size:12px;
+    line-height:1.45;
+    background:rgba(127,127,127,.08);
+}
+@media(max-width:600px){
+    .analytics-v10-grid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+
 </head>
 
 <body>
@@ -1210,6 +1305,49 @@ html{
     </div>
 </div>
 
+
+
+<div id="analyticsInteractiveV10">
+    <div class="analytics-v10-head">
+        <div>
+            <div class="analytics-v10-title">⚡ Dashboard Interaktif</div>
+            <div class="analytics-v10-subtitle">
+                Ringkasan analytics ToolKu dalam satu tampilan.
+            </div>
+        </div>
+        <div id="analyticsV10Period" class="analytics-v10-period">
+            Hari Ini
+        </div>
+    </div>
+
+    <div class="analytics-v10-grid">
+        <div class="analytics-v10-card">
+            <div class="analytics-v10-label">Total Penggunaan</div>
+            <div id="analyticsV10Total" class="analytics-v10-value">0</div>
+        </div>
+
+        <div class="analytics-v10-card">
+            <div class="analytics-v10-label">Tool Aktif</div>
+            <div id="analyticsV10Active" class="analytics-v10-value">0</div>
+        </div>
+
+        <div class="analytics-v10-card">
+            <div class="analytics-v10-label">Tool Teratas</div>
+            <div id="analyticsV10Top" class="analytics-v10-value">Belum ada</div>
+        </div>
+    </div>
+
+    <div class="analytics-v10-top">
+        <div class="analytics-v10-top-title">🏆 Ranking Penggunaan</div>
+        <div id="analyticsV10Ranking">
+            Belum ada data.
+        </div>
+    </div>
+
+    <div id="analyticsV10Insight" class="analytics-v10-insight">
+        💡 Belum ada insight.
+    </div>
+</div>
 
 <div id="analyticsExportPro" class="analytics-export-pro">
     <div class="analytics-export-head">
@@ -2085,6 +2223,10 @@ function pilihPeriodeStatistik(periode){
 
     if(typeof tampilkanAnalyticsInsightPro === "function"){
         tampilkanAnalyticsInsightPro();
+    }
+
+    if(typeof tampilkanAnalyticsInteractiveV10 === "function"){
+        tampilkanAnalyticsInteractiveV10();
     }
 
     if(typeof tampilkanDashboardRingkas === "function"){
@@ -3757,6 +3899,111 @@ function tampilkanAnalyticsInsightPro(){
             '<span class="analytics-insight-pro-icon">⚠️</span>' +
             '<span>Insight belum dapat dihitung.</span>' +
             '</div>';
+    }
+}
+
+
+function tampilkanAnalyticsInteractiveV10(){
+    const totalEl = document.getElementById("analyticsV10Total");
+    const activeEl = document.getElementById("analyticsV10Active");
+    const topEl = document.getElementById("analyticsV10Top");
+    const periodEl = document.getElementById("analyticsV10Period");
+    const rankingEl = document.getElementById("analyticsV10Ranking");
+    const insightEl = document.getElementById("analyticsV10Insight");
+
+    if(!totalEl || !activeEl || !topEl || !periodEl || !rankingEl || !insightEl){
+        return;
+    }
+
+    try{
+        const periode = typeof periodeStatistikAktif !== "undefined"
+            ? periodeStatistikAktif
+            : "hari";
+
+        const namaPeriode = {
+            hari:"Hari Ini",
+            "7hari":"7 Hari",
+            "30hari":"30 Hari",
+            semua:"Semua"
+        }[periode] || periode;
+
+        const data = typeof ambilStatistikPeriode === "function"
+            ? ambilStatistikPeriode(periode)
+            : {};
+
+        const daftar = Object.entries(data || {})
+            .map(function(item){
+                return {
+                    nama:String(item[0]),
+                    jumlah:Number(item[1]) || 0
+                };
+            })
+            .filter(function(item){
+                return item.jumlah > 0;
+            })
+            .sort(function(a,b){
+                return b.jumlah - a.jumlah;
+            });
+
+        let total = 0;
+        daftar.forEach(function(item){
+            total += item.jumlah;
+        });
+
+        periodEl.textContent = namaPeriode;
+        totalEl.textContent = total;
+        activeEl.textContent = daftar.length;
+        topEl.textContent = daftar.length ? daftar[0].nama : "Belum ada";
+
+        if(!daftar.length){
+            rankingEl.innerHTML = "Belum ada data penggunaan.";
+            insightEl.textContent =
+                "💡 Belum ada aktivitas pada periode ini.";
+            return;
+        }
+
+        rankingEl.innerHTML = daftar.slice(0,5).map(function(item,index){
+            return '<div class="analytics-v10-row">' +
+                   '<span class="analytics-v10-rank">' +
+                   (index + 1) + '. ' + item.nama +
+                   '</span>' +
+                   '<span class="analytics-v10-number">' +
+                   item.jumlah + ' penggunaan' +
+                   '</span>' +
+                   '</div>';
+        }).join("");
+
+        const top = daftar[0];
+        const persentase = total
+            ? Math.round((top.jumlah / total) * 100)
+            : 0;
+
+        let insight =
+            "🏆 " + top.nama +
+            " menjadi tool paling populer dengan " +
+            top.jumlah + " penggunaan.";
+
+        if(persentase >= 70){
+            insight +=
+                " Tool ini sangat dominan (" +
+                persentase +
+                "% dari total penggunaan), sehingga layak menjadi fokus promosi.";
+        }else if(persentase >= 40){
+            insight +=
+                " Tool ini memiliki kontribusi kuat sebesar " +
+                persentase +
+                "% dari total penggunaan.";
+        }else{
+            insight +=
+                " Penggunaan cukup tersebar sehingga beberapa tool memiliki peluang untuk dikembangkan.";
+        }
+
+        insightEl.textContent = "💡 " + insight;
+
+    }catch(error){
+        console.error("Analytics Interactive v10 gagal:",error);
+        insightEl.textContent =
+            "⚠️ Dashboard analytics belum dapat dihitung.";
     }
 }
 
