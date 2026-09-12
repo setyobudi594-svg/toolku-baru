@@ -801,6 +801,69 @@ html{
 }
 </style>
 
+
+<style id="analytics-growth-pro-css">
+#analyticsGrowthPro{
+    margin:14px 0;
+    padding:16px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#f0fdf4,#ecfeff);
+    border:1px solid rgba(16,185,129,.16);
+}
+.analytics-growth-title{
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:4px;
+}
+.analytics-growth-subtitle{
+    font-size:12px;
+    opacity:.72;
+    margin-bottom:12px;
+}
+.analytics-growth-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+.analytics-growth-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:11px 12px;
+    border-radius:13px;
+    background:rgba(255,255,255,.78);
+}
+.analytics-growth-name{
+    font-weight:700;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.analytics-growth-meta{
+    font-size:11px;
+    opacity:.7;
+    margin-top:2px;
+}
+.analytics-growth-badge{
+    flex-shrink:0;
+    font-size:12px;
+    font-weight:800;
+    padding:5px 8px;
+    border-radius:999px;
+}
+.analytics-growth-up{
+    background:rgba(16,185,129,.13);
+}
+.analytics-growth-down{
+    background:rgba(239,68,68,.11);
+}
+.analytics-growth-flat{
+    background:rgba(107,114,128,.12);
+}
+</style>
+
 </head>
 
 <body>
@@ -945,6 +1008,17 @@ html{
     </div>
     <div id="analyticsPerformanceIsi">
         Belum ada data penggunaan.
+    </div>
+</div>
+
+
+<div id="analyticsGrowthPro">
+    <div class="analytics-growth-title">🚀 Tool Growth Ranking</div>
+    <div class="analytics-growth-subtitle">
+        Perubahan penggunaan dibanding periode sebelumnya
+    </div>
+    <div id="analyticsGrowthIsi">
+        Belum ada data pertumbuhan tool.
     </div>
 </div>
 
@@ -1755,6 +1829,10 @@ function pilihPeriodeStatistik(periode){
 
     if(typeof tampilkanAnalyticsPerformance === "function"){
         tampilkanAnalyticsPerformance();
+    }
+
+    if(typeof tampilkanAnalyticsGrowth === "function"){
+        tampilkanAnalyticsGrowth();
     }
 
     if(typeof tampilkanDashboardRingkas === "function"){
@@ -3025,6 +3103,124 @@ function tampilkanAnalyticsPerformance(){
         '</div>';
 }
 </script>
+
+<script id="analytics-growth-pro-js">
+function tampilkanAnalyticsGrowth(){
+    const target = document.getElementById("analyticsGrowthIsi");
+    if(!target) return;
+
+    let periode = typeof periodeStatistikAktif !== "undefined"
+        ? periodeStatistikAktif
+        : "hari";
+
+    if(periode === "semua"){
+        target.innerHTML =
+            "📌 Pilih <strong>Hari Ini</strong>, <strong>7 Hari</strong>, atau " +
+            "<strong>30 Hari</strong> untuk melihat pertumbuhan tool.";
+        return;
+    }
+
+    let sekarang = typeof ambilStatistikPeriode === "function"
+        ? (ambilStatistikPeriode(periode) || {})
+        : {};
+
+    let sebelumnya =
+        typeof ambilStatistikPeriodeSebelumnya === "function"
+        ? (ambilStatistikPeriodeSebelumnya(periode) || {})
+        : {};
+
+    let semuaNama = Array.from(
+        new Set(
+            Object.keys(sekarang).concat(Object.keys(sebelumnya))
+        )
+    );
+
+    let data = [];
+
+    semuaNama.forEach(function(nama){
+        let nilaiSekarang = Number(sekarang[nama] || 0);
+        let nilaiSebelumnya = Number(sebelumnya[nama] || 0);
+
+        if(nilaiSekarang === 0 && nilaiSebelumnya === 0){
+            return;
+        }
+
+        let perubahan;
+
+        if(nilaiSebelumnya === 0){
+            perubahan = nilaiSekarang > 0 ? 100 : 0;
+        }else{
+            perubahan = Math.round(
+                ((nilaiSekarang - nilaiSebelumnya) /
+                nilaiSebelumnya) * 100
+            );
+        }
+
+        data.push({
+            nama: nama,
+            sekarang: nilaiSekarang,
+            sebelumnya: nilaiSebelumnya,
+            perubahan: perubahan
+        });
+    });
+
+    if(data.length === 0){
+        target.innerHTML =
+            "📌 Belum ada data pertumbuhan tool.";
+        return;
+    }
+
+    data.sort(function(a,b){
+        return b.perubahan - a.perubahan;
+    });
+
+    let html = '<div class="analytics-growth-list">';
+
+    data.slice(0,5).forEach(function(item){
+        let ikon;
+        let kelas;
+        let teks;
+
+        if(item.perubahan > 0){
+            ikon = "🚀";
+            kelas = "analytics-growth-up";
+            teks = "+" + item.perubahan + "%";
+        }else if(item.perubahan < 0){
+            ikon = "📉";
+            kelas = "analytics-growth-down";
+            teks = item.perubahan + "%";
+        }else{
+            ikon = "➡️";
+            kelas = "analytics-growth-flat";
+            teks = "0%";
+        }
+
+        html +=
+            '<div class="analytics-growth-item">' +
+                '<div>' +
+                    '<div class="analytics-growth-name">' +
+                        ikon + " " + item.nama +
+                    '</div>' +
+                    '<div class="analytics-growth-meta">' +
+                        item.sekarang +
+                        ' sekarang · ' +
+                        item.sebelumnya +
+                        ' sebelumnya' +
+                    '</div>' +
+                '</div>' +
+                '<div class="analytics-growth-badge ' +
+                    kelas + '">' +
+                    teks +
+                '</div>' +
+            '</div>';
+    });
+
+    html += '</div>';
+
+    target.innerHTML = html;
+}
+</script>
+
 
 
 
