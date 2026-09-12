@@ -732,6 +732,75 @@ html{
 }
 </style>
 
+
+<style id="analytics-performance-pro-css">
+#analyticsPerformancePro{
+    margin:14px 0;
+    padding:16px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#eff6ff,#f5f3ff);
+    border:1px solid rgba(59,130,246,.16);
+}
+.analytics-performance-title{
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:4px;
+}
+.analytics-performance-subtitle{
+    font-size:12px;
+    opacity:.72;
+    margin-bottom:12px;
+}
+.analytics-performance-chart{
+    display:flex;
+    align-items:flex-end;
+    gap:7px;
+    height:145px;
+    padding:8px 2px 0;
+}
+.analytics-performance-day{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    align-items:center;
+    min-width:0;
+}
+.analytics-performance-value{
+    font-size:10px;
+    font-weight:800;
+    margin-bottom:4px;
+}
+.analytics-performance-bar-wrap{
+    width:100%;
+    height:100px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+}
+.analytics-performance-bar{
+    width:min(30px,72%);
+    min-height:3px;
+    border-radius:8px 8px 3px 3px;
+    background:linear-gradient(180deg,#6366f1,#3b82f6);
+    transition:height .45s ease;
+}
+.analytics-performance-label{
+    font-size:10px;
+    margin-top:6px;
+    opacity:.75;
+}
+.analytics-performance-info{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.72);
+    font-size:13px;
+    line-height:1.5;
+}
+</style>
+
 </head>
 
 <body>
@@ -865,6 +934,17 @@ html{
     <div class="analytics-comparison-title">📊 Perbandingan Periode</div>
     <div id="analyticsComparisonIsi">
         Belum ada data perbandingan.
+    </div>
+</div>
+
+
+<div id="analyticsPerformancePro">
+    <div class="analytics-performance-title">📈 Performa Tool 7 Hari</div>
+    <div class="analytics-performance-subtitle">
+        Aktivitas penggunaan tool berdasarkan 7 hari terakhir
+    </div>
+    <div id="analyticsPerformanceIsi">
+        Belum ada data penggunaan.
     </div>
 </div>
 
@@ -1671,6 +1751,10 @@ function pilihPeriodeStatistik(periode){
 
     if(typeof tampilkanAnalyticsComparison === "function"){
         tampilkanAnalyticsComparison();
+    }
+
+    if(typeof tampilkanAnalyticsPerformance === "function"){
+        tampilkanAnalyticsPerformance();
     }
 
     if(typeof tampilkanDashboardRingkas === "function"){
@@ -2835,6 +2919,113 @@ function tampilkanAnalyticsComparison(){
     target.innerHTML = html;
 }
 </script>
+
+<script id="analytics-performance-pro-js">
+function tampilkanAnalyticsPerformance(){
+    const target = document.getElementById("analyticsPerformanceIsi");
+    if(!target) return;
+
+    let log = JSON.parse(
+        localStorage.getItem("logPenggunaanTool") || "[]"
+    );
+
+    let sekarang = new Date();
+    let dataHari = [];
+
+    for(let i = 6; i >= 0; i--){
+        let tanggal = new Date(sekarang);
+        tanggal.setHours(0,0,0,0);
+        tanggal.setDate(tanggal.getDate() - i);
+
+        let berikutnya = new Date(tanggal);
+        berikutnya.setDate(berikutnya.getDate() + 1);
+
+        let jumlah = 0;
+
+        log.forEach(function(item){
+            let waktu = new Date(item.waktu);
+
+            if(
+                !isNaN(waktu.getTime()) &&
+                waktu >= tanggal &&
+                waktu < berikutnya
+            ){
+                jumlah++;
+            }
+        });
+
+        dataHari.push({
+            tanggal: tanggal,
+            jumlah: jumlah
+        });
+    }
+
+    let maksimum = Math.max(
+        ...dataHari.map(function(item){
+            return item.jumlah;
+        }),
+        1
+    );
+
+    let namaHari = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
+
+    let chart = '<div class="analytics-performance-chart">';
+
+    dataHari.forEach(function(item){
+        let tinggi = item.jumlah > 0
+            ? Math.max(6, Math.round(
+                (item.jumlah / maksimum) * 100
+            ))
+            : 3;
+
+        chart +=
+            '<div class="analytics-performance-day">' +
+                '<div class="analytics-performance-value">' +
+                    item.jumlah +
+                '</div>' +
+                '<div class="analytics-performance-bar-wrap">' +
+                    '<div class="analytics-performance-bar" ' +
+                    'style="height:' + tinggi + 'px"></div>' +
+                '</div>' +
+                '<div class="analytics-performance-label">' +
+                    namaHari[item.tanggal.getDay()] +
+                '</div>' +
+            '</div>';
+    });
+
+    chart += '</div>';
+
+    let total = dataHari.reduce(function(total,item){
+        return total + item.jumlah;
+    },0);
+
+    let hariTeraktif = dataHari.reduce(function(a,b){
+        return b.jumlah > a.jumlah ? b : a;
+    }, dataHari[0]);
+
+    let tanggalAktif = hariTeraktif.tanggal.toLocaleDateString(
+        "id-ID",
+        {
+            day:"numeric",
+            month:"short"
+        }
+    );
+
+    target.innerHTML =
+        chart +
+        '<div class="analytics-performance-info">' +
+            '📊 Total 7 hari: <strong>' + total +
+            '</strong> penggunaan.<br>' +
+            '🔥 Hari teraktif: <strong>' +
+            namaHari[hariTeraktif.tanggal.getDay()] +
+            ', ' + tanggalAktif +
+            '</strong> dengan <strong>' +
+            hariTeraktif.jumlah +
+            '</strong> penggunaan.' +
+        '</div>';
+}
+</script>
+
 
 
 </body>
