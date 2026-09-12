@@ -864,6 +864,42 @@ html{
 }
 </style>
 
+
+<style id="analytics-smart-pro-css">
+#analyticsSmartRecommendation{
+    margin:14px 0;
+    padding:16px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#faf5ff,#eff6ff);
+    border:1px solid rgba(139,92,246,.16);
+}
+.analytics-smart-title{
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:4px;
+}
+.analytics-smart-subtitle{
+    font-size:12px;
+    opacity:.72;
+    margin-bottom:12px;
+}
+.analytics-smart-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+.analytics-smart-item{
+    padding:11px 12px;
+    border-radius:13px;
+    background:rgba(255,255,255,.78);
+    font-size:13px;
+    line-height:1.5;
+}
+.analytics-smart-item strong{
+    font-weight:800;
+}
+</style>
+
 </head>
 
 <body>
@@ -1011,6 +1047,17 @@ html{
     </div>
 </div>
 
+
+
+<div id="analyticsSmartRecommendation">
+    <div class="analytics-smart-title">🧠 Smart Recommendation</div>
+    <div class="analytics-smart-subtitle">
+        Rekomendasi otomatis berdasarkan aktivitas pengguna
+    </div>
+    <div id="analyticsSmartIsi">
+        Belum ada rekomendasi.
+    </div>
+</div>
 
 <div id="analyticsGrowthPro">
     <div class="analytics-growth-title">🚀 Tool Growth Ranking</div>
@@ -1833,6 +1880,10 @@ function pilihPeriodeStatistik(periode){
 
     if(typeof tampilkanAnalyticsGrowth === "function"){
         tampilkanAnalyticsGrowth();
+    }
+
+    if(typeof tampilkanAnalyticsSmartRecommendation === "function"){
+        tampilkanAnalyticsSmartRecommendation();
     }
 
     if(typeof tampilkanDashboardRingkas === "function"){
@@ -3220,6 +3271,164 @@ function tampilkanAnalyticsGrowth(){
     target.innerHTML = html;
 }
 </script>
+
+<script id="analytics-smart-pro-js">
+function tampilkanAnalyticsSmartRecommendation(){
+    const target = document.getElementById("analyticsSmartIsi");
+    if(!target) return;
+
+    let periode = typeof periodeStatistikAktif !== "undefined"
+        ? periodeStatistikAktif
+        : "hari";
+
+    let statistik = typeof ambilStatistikPeriode === "function"
+        ? (ambilStatistikPeriode(periode) || {})
+        : {};
+
+    let ranking = Object.keys(statistik)
+        .filter(function(nama){
+            return Number(statistik[nama] || 0) > 0;
+        })
+        .sort(function(a,b){
+            return Number(statistik[b] || 0) -
+                   Number(statistik[a] || 0);
+        });
+
+    if(ranking.length === 0){
+        target.innerHTML =
+            '<div class="analytics-smart-list">' +
+                '<div class="analytics-smart-item">' +
+                    '💡 Belum ada aktivitas yang cukup untuk membuat rekomendasi.' +
+                '</div>' +
+            '</div>';
+        return;
+    }
+
+    let sebelumnya = {};
+
+    if(
+        periode !== "semua" &&
+        typeof ambilStatistikPeriodeSebelumnya === "function"
+    ){
+        sebelumnya = ambilStatistikPeriodeSebelumnya(periode) || {};
+    }
+
+    let total = ranking.reduce(function(jumlah,nama){
+        return jumlah + Number(statistik[nama] || 0);
+    },0);
+
+    let terpopuler = ranking[0];
+    let nilaiTerpopuler = Number(statistik[terpopuler] || 0);
+
+    let rekomendasi = [];
+
+    if(total > 0){
+        let dominasi = Math.round(
+            (nilaiTerpopuler / total) * 100
+        );
+
+        if(dominasi >= 50){
+            rekomendasi.push(
+                '🏆 <strong>' + terpopuler +
+                '</strong> sangat dominan dengan ' +
+                '<strong>' + dominasi +
+                '%</strong> dari seluruh penggunaan. ' +
+                'Pertimbangkan menonjolkan tool ini di beranda.'
+            );
+        }else{
+            rekomendasi.push(
+                '🏆 <strong>' + terpopuler +
+                '</strong> merupakan tool terpopuler saat ini. ' +
+                'Pertimbangkan menempatkannya lebih menonjol di beranda.'
+            );
+        }
+    }
+
+    if(periode !== "semua"){
+        let kandidatNaik = ranking
+            .map(function(nama){
+                let sekarang = Number(statistik[nama] || 0);
+                let lalu = Number(sebelumnya[nama] || 0);
+
+                let perubahan = lalu === 0
+                    ? (sekarang > 0 ? 100 : 0)
+                    : Math.round(
+                        ((sekarang - lalu) / lalu) * 100
+                    );
+
+                return {
+                    nama:nama,
+                    sekarang:sekarang,
+                    lalu:lalu,
+                    perubahan:perubahan
+                };
+            })
+            .sort(function(a,b){
+                return b.perubahan - a.perubahan;
+            });
+
+        if(kandidatNaik.length > 0 &&
+           kandidatNaik[0].perubahan > 0){
+            let naik = kandidatNaik[0];
+
+            rekomendasi.push(
+                '🚀 <strong>' + naik.nama +
+                '</strong> menunjukkan pertumbuhan paling tinggi, ' +
+                'naik <strong>' + naik.perubahan +
+                '%</strong>. Ini kandidat bagus untuk dipromosikan.'
+            );
+        }
+
+        let kandidatTurun = kandidatNaik
+            .filter(function(item){
+                return item.perubahan < 0;
+            })
+            .sort(function(a,b){
+                return a.perubahan - b.perubahan;
+            });
+
+        if(kandidatTurun.length > 0){
+            let turun = kandidatTurun[0];
+
+            rekomendasi.push(
+                '📉 <strong>' + turun.nama +
+                '</strong> mengalami penurunan ' +
+                '<strong>' + Math.abs(turun.perubahan) +
+                '%</strong>. Pertimbangkan memperbaiki visibilitas atau ' +
+                'promosi tool tersebut.'
+            );
+        }
+    }
+
+    if(ranking.length >= 3){
+        let tigaTeratas =
+            Number(statistik[ranking[0]] || 0) +
+            Number(statistik[ranking[1]] || 0) +
+            Number(statistik[ranking[2]] || 0);
+
+        let kontribusi = Math.round(
+            (tigaTeratas / total) * 100
+        );
+
+        rekomendasi.push(
+            '📊 Tiga tool teratas menyumbang ' +
+            '<strong>' + kontribusi +
+            '%</strong> aktivitas. Pertahankan tool unggulan sambil ' +
+            'mendorong tool yang masih rendah.'
+        );
+    }
+
+    target.innerHTML =
+        '<div class="analytics-smart-list">' +
+        rekomendasi.map(function(item){
+            return '<div class="analytics-smart-item">' +
+                   item +
+                   '</div>';
+        }).join("") +
+        '</div>';
+}
+</script>
+
 
 
 
