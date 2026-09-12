@@ -697,6 +697,41 @@ html{
 }
 </style>
 
+
+<style id="analytics-comparison-pro-css">
+#analyticsComparisonPro{
+    margin:14px 0;
+    padding:16px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#fff7ed,#fefce8);
+    border:1px solid rgba(245,158,11,.18);
+}
+.analytics-comparison-title{
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+#analyticsComparisonIsi{
+    font-size:14px;
+    line-height:1.55;
+}
+.analytics-comparison-item{
+    margin-top:9px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.78);
+}
+.analytics-comparison-up{
+    font-weight:800;
+}
+.analytics-comparison-down{
+    font-weight:800;
+}
+.analytics-comparison-flat{
+    font-weight:800;
+}
+</style>
+
 </head>
 
 <body>
@@ -824,6 +859,14 @@ html{
     </div>
 
 
+
+
+<div id="analyticsComparisonPro">
+    <div class="analytics-comparison-title">📊 Perbandingan Periode</div>
+    <div id="analyticsComparisonIsi">
+        Belum ada data perbandingan.
+    </div>
+</div>
 
 <div id="analyticsInsightPro">
     <div class="analytics-insight-title">💡 Insight Analytics</div>
@@ -1624,6 +1667,10 @@ function pilihPeriodeStatistik(periode){
 
     if(typeof tampilkanAnalyticsPro === "function"){
         tampilkanAnalyticsPro();
+    }
+
+    if(typeof tampilkanAnalyticsComparison === "function"){
+        tampilkanAnalyticsComparison();
     }
 
     if(typeof tampilkanDashboardRingkas === "function"){
@@ -2640,6 +2687,155 @@ function tampilkanAnalyticsInsight(){
     target.innerHTML = html;
 }
 </script>
+
+<script id="analytics-comparison-pro-js">
+function ambilStatistikPeriodeSebelumnya(periode){
+    let log = JSON.parse(localStorage.getItem("logPenggunaanTool") || "[]");
+    let sekarang = Date.now();
+
+    if(periode === "semua"){
+        return {};
+    }
+
+    let hari = periode === "hari" ? 1 : parseInt(periode);
+    if(!hari || hari < 1) return {};
+
+    let batasSekarang = sekarang - (hari * 24 * 60 * 60 * 1000);
+    let batasSebelumnya = sekarang - (hari * 2 * 24 * 60 * 60 * 1000);
+
+    let hasil = {};
+
+    log.forEach(function(item){
+        let waktu = new Date(item.waktu).getTime();
+
+        if(
+            !isNaN(waktu) &&
+            waktu >= batasSebelumnya &&
+            waktu < batasSekarang
+        ){
+            hasil[item.nama] = (hasil[item.nama] || 0) + 1;
+        }
+    });
+
+    return hasil;
+}
+
+function tampilkanAnalyticsComparison(){
+    const target = document.getElementById("analyticsComparisonIsi");
+    if(!target) return;
+
+    let periode = typeof periodeStatistikAktif !== "undefined"
+        ? periodeStatistikAktif
+        : "hari";
+
+    if(periode === "semua"){
+        target.innerHTML =
+            "📌 Pilih <strong>Hari Ini</strong>, <strong>7 Hari</strong>, atau " +
+            "<strong>30 Hari</strong> untuk melihat perbandingan.";
+        return;
+    }
+
+    let sekarang = typeof ambilStatistikPeriode === "function"
+        ? (ambilStatistikPeriode(periode) || {})
+        : {};
+
+    let sebelumnya = ambilStatistikPeriodeSebelumnya(periode);
+
+    let totalSekarang = Object.keys(sekarang).reduce(function(total,nama){
+        return total + Number(sekarang[nama] || 0);
+    },0);
+
+    let totalSebelumnya = Object.keys(sebelumnya).reduce(function(total,nama){
+        return total + Number(sebelumnya[nama] || 0);
+    },0);
+
+    if(totalSekarang === 0 && totalSebelumnya === 0){
+        target.innerHTML = "📌 Belum ada cukup data untuk membuat perbandingan.";
+        return;
+    }
+
+    let perubahan = totalSebelumnya === 0
+        ? (totalSekarang > 0 ? 100 : 0)
+        : Math.round(
+            ((totalSekarang - totalSebelumnya) / totalSebelumnya) * 100
+        );
+
+    let arah = perubahan > 0
+        ? "📈"
+        : perubahan < 0
+            ? "📉"
+            : "➡️";
+
+    let kelas = perubahan > 0
+        ? "analytics-comparison-up"
+        : perubahan < 0
+            ? "analytics-comparison-down"
+            : "analytics-comparison-flat";
+
+    let teksPerubahan = perubahan > 0
+        ? "naik " + perubahan + "%"
+        : perubahan < 0
+            ? "turun " + Math.abs(perubahan) + "%"
+            : "tetap";
+
+    let rankingSekarang = Object.keys(sekarang)
+        .filter(function(nama){
+            return Number(sekarang[nama] || 0) > 0;
+        })
+        .sort(function(a,b){
+            return Number(sekarang[b] || 0) - Number(sekarang[a] || 0);
+        });
+
+    let html =
+        '<div class="analytics-comparison-item">' +
+        arah + ' Total penggunaan ' +
+        '<span class="' + kelas + '">' +
+        teksPerubahan +
+        '</span> dibanding periode sebelumnya.' +
+        '</div>';
+
+    html +=
+        '<div class="analytics-comparison-item">' +
+        '📊 Sekarang: <strong>' + totalSekarang +
+        '</strong> penggunaan · Sebelumnya: <strong>' +
+        totalSebelumnya + '</strong> penggunaan.' +
+        '</div>';
+
+    if(rankingSekarang.length > 0){
+        let namaTeratas = rankingSekarang[0];
+        let nilaiSekarang = Number(sekarang[namaTeratas] || 0);
+        let nilaiSebelumnya = Number(sebelumnya[namaTeratas] || 0);
+
+        let perubahanTool = nilaiSebelumnya === 0
+            ? (nilaiSekarang > 0 ? 100 : 0)
+            : Math.round(
+                ((nilaiSekarang - nilaiSebelumnya) / nilaiSebelumnya) * 100
+            );
+
+        let simbolTool = perubahanTool > 0
+            ? "📈"
+            : perubahanTool < 0
+                ? "📉"
+                : "➡️";
+
+        let teksTool = perubahanTool > 0
+            ? "naik " + perubahanTool + "%"
+            : perubahanTool < 0
+                ? "turun " + Math.abs(perubahanTool) + "%"
+                : "tetap";
+
+        html +=
+            '<div class="analytics-comparison-item">' +
+            simbolTool + ' Tool terpopuler saat ini: ' +
+            '<strong>' + namaTeratas + '</strong>, ' +
+            teksTool + ' dibanding periode sebelumnya.' +
+            '</div>';
+    }
+
+    target.innerHTML = html;
+}
+</script>
+
 
 </body>
 </html>
