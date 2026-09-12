@@ -2083,6 +2083,10 @@ function pilihPeriodeStatistik(periode){
         tampilkanAnalyticsExecutive();
     }
 
+    if(typeof tampilkanAnalyticsInsightPro === "function"){
+        tampilkanAnalyticsInsightPro();
+    }
+
     if(typeof tampilkanDashboardRingkas === "function"){
         tampilkanDashboardRingkas();
     }
@@ -3627,6 +3631,134 @@ function tampilkanAnalyticsSmartRecommendation(){
 </script>
 
 <script id="analytics-executive-pro-js">
+
+
+function tampilkanAnalyticsInsightPro(){
+    const target = document.getElementById("analyticsInsightProList");
+    if(!target) return;
+
+    try{
+        const periode = typeof periodeStatistikAktif !== "undefined"
+            ? periodeStatistikAktif
+            : "hari";
+
+        const data = typeof ambilStatistikPeriode === "function"
+            ? ambilStatistikPeriode(periode)
+            : {};
+
+        const daftar = Object.entries(data || {})
+            .map(function(item){
+                return {
+                    nama: item[0],
+                    jumlah: Number(item[1]) || 0
+                };
+            })
+            .filter(function(item){
+                return item.jumlah > 0;
+            })
+            .sort(function(a,b){
+                return b.jumlah - a.jumlah;
+            });
+
+        if(!daftar.length){
+            target.innerHTML =
+                '<div class="analytics-insight-pro-item">' +
+                '<span class="analytics-insight-pro-icon">💡</span>' +
+                '<span>Belum ada penggunaan pada periode ini.</span>' +
+                '</div>';
+            return;
+        }
+
+        let total = 0;
+        daftar.forEach(function(item){
+            total += item.jumlah;
+        });
+
+        const top = daftar[0];
+        const kedua = daftar[1];
+
+        const insight = [];
+
+        insight.push({
+            icon:"🏆",
+            text:"Tool paling populer saat ini adalah " +
+                 top.nama + " dengan " + top.jumlah +
+                 " penggunaan."
+        });
+
+        if(daftar.length >= 2 && total > 0){
+            const persentase = Math.round((top.jumlah / total) * 100);
+            insight.push({
+                icon:"🔥",
+                text:top.nama + " menyumbang sekitar " +
+                     persentase + "% dari seluruh penggunaan pada periode ini."
+            });
+        }
+
+        if(kedua){
+            const selisih = top.jumlah - kedua.jumlah;
+            insight.push({
+                icon:"📊",
+                text:"Posisi kedua adalah " + kedua.nama +
+                     " dengan " + kedua.jumlah +
+                     " penggunaan. Selisih dari posisi pertama: " +
+                     selisih + "."
+            });
+        }
+
+        if(daftar.length >= 3){
+            insight.push({
+                icon:"🚀",
+                text:"ToolKu memiliki " + daftar.length +
+                     " tool yang aktif digunakan pada periode ini."
+            });
+        }else{
+            insight.push({
+                icon:"💡",
+                text:"Pertimbangkan mempromosikan tool lain agar penggunaan lebih merata."
+            });
+        }
+
+        if(total >= 50){
+            insight.push({
+                icon:"📈",
+                text:"Aktivitas penggunaan tergolong tinggi dengan total " +
+                     total + " penggunaan."
+            });
+        }else if(total >= 10){
+            insight.push({
+                icon:"⚡",
+                text:"Aktivitas mulai terbentuk dengan total " +
+                     total + " penggunaan. Pertahankan promosi tool terpopuler."
+            });
+        }else{
+            insight.push({
+                icon:"🌱",
+                text:"Data masih dalam tahap awal. Terus tambahkan dan promosikan tool untuk mendapatkan pola penggunaan yang lebih kuat."
+            });
+        }
+
+        target.innerHTML = insight.map(function(item){
+            return '<div class="analytics-insight-pro-item">' +
+                   '<span class="analytics-insight-pro-icon">' +
+                   item.icon +
+                   '</span>' +
+                   '<span>' +
+                   item.text +
+                   '</span>' +
+                   '</div>';
+        }).join("");
+
+    }catch(error){
+        console.error("Analytics Insight Pro gagal:", error);
+
+        target.innerHTML =
+            '<div class="analytics-insight-pro-item">' +
+            '<span class="analytics-insight-pro-icon">⚠️</span>' +
+            '<span>Insight belum dapat dihitung.</span>' +
+            '</div>';
+    }
+}
 
 function exportAnalyticsTXT(){
     try{
