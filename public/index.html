@@ -599,6 +599,75 @@ html{
 }
 </style>
 
+
+<style id="analytics-pro-css">
+#analyticsProToolKu{
+    margin:12px 0 14px;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:var(--card);
+}
+.analytics-pro-title{
+    font-weight:800;
+    margin-bottom:4px;
+}
+.analytics-pro-subtitle{
+    font-size:11px;
+    opacity:.65;
+    margin-bottom:12px;
+}
+.analytics-pro-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:9px 0;
+    padding:10px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--card);
+}
+.analytics-pro-medal{
+    width:28px;
+    text-align:center;
+    font-size:20px;
+}
+.analytics-pro-main{
+    flex:1;
+    min-width:0;
+}
+.analytics-pro-name{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    font-size:13px;
+    font-weight:700;
+}
+.analytics-pro-percent{
+    font-size:11px;
+    opacity:.65;
+}
+.analytics-pro-track{
+    height:7px;
+    margin-top:6px;
+    border-radius:8px;
+    background:var(--border);
+    overflow:hidden;
+}
+.analytics-pro-bar{
+    width:0%;
+    height:100%;
+    border-radius:8px;
+    background:currentColor;
+    transition:width .7s ease;
+}
+.analytics-pro-empty{
+    font-size:13px;
+    opacity:.65;
+    padding:8px 0;
+}
+</style>
+
 </head>
 
 <body>
@@ -725,7 +794,19 @@ html{
         </div>
     </div>
 
-    <div id="rankingToolDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
+
+<div id="analyticsProToolKu">
+    <div class="analytics-pro-title">🏆 Top 3 Tool Terpopuler</div>
+    <div class="analytics-pro-subtitle">
+        Persentase berdasarkan periode statistik yang dipilih
+    </div>
+    <div id="analyticsProIsi">
+        Belum ada data penggunaan
+    </div>
+</div>
+
+
+<div id="rankingToolDashboard" style="margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text);">
         <strong>🏆 Ranking Penggunaan Tool</strong>
         <div id="daftarRankingTool" style="margin-top:10px;color:var(--muted);font-size:13px;">
             Belum ada data penggunaan
@@ -739,7 +820,7 @@ html{
     <button id="importStatistik" type="button" onclick="document.getElementById('fileImportStatistik').click()" style="width:100%;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
         📥 Import Statistik
     </button>
-    
+
     <button id="backupSemuaData" type="button" onclick="backupSemuaData()" style="width:100%;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;">
         📦 Backup Semua Data
     </button>
@@ -1503,6 +1584,10 @@ function ambilStatistikPeriode(periode){
 
 function pilihPeriodeStatistik(periode){
     periodeStatistikAktif = periode;
+
+    if(typeof tampilkanAnalyticsPro === "function"){
+        tampilkanAnalyticsPro();
+    }
 
     if(typeof tampilkanDashboardRingkas === "function"){
         tampilkanDashboardRingkas();
@@ -2329,6 +2414,110 @@ function bukaToolDariRanking(namaTool){
         alert("Tool \"" + namaTool + "\" tidak ditemukan.");
     }
 }
+
+</script>
+<script id='analytics-pro-js'>
+
+function tampilkanAnalyticsPro(){
+    const container =
+        document.getElementById("analyticsProIsi");
+
+    if(!container) return;
+
+    let statistik = {};
+
+    try{
+        if(typeof ambilStatistikPeriode === "function"){
+            const periode =
+                typeof periodeStatistikAktif !== "undefined"
+                    ? periodeStatistikAktif
+                    : "hari";
+
+            statistik = ambilStatistikPeriode(periode) || {};
+        }else{
+            statistik = JSON.parse(
+                localStorage.getItem("statistikTool") || "{}"
+            );
+        }
+    }catch(error){
+        statistik = {};
+    }
+
+    const ranking = Object.keys(statistik)
+        .filter(function(nama){
+            return (statistik[nama] || 0) > 0;
+        })
+        .sort(function(a,b){
+            return (statistik[b] || 0) -
+                   (statistik[a] || 0);
+        })
+        .slice(0,3);
+
+    if(ranking.length === 0){
+        container.innerHTML =
+            "<div class='analytics-pro-empty'>" +
+            "Belum ada data penggunaan" +
+            "</div>";
+        return;
+    }
+
+    const total = Object.keys(statistik)
+        .reduce(function(jumlah,nama){
+            return jumlah + (Number(statistik[nama]) || 0);
+        },0);
+
+    const medal = ["🥇","🥈","🥉"];
+
+    container.innerHTML = ranking.map(function(nama,index){
+        const jumlah =
+            Number(statistik[nama]) || 0;
+
+        const persen = total > 0
+            ? Math.round((jumlah / total) * 100)
+            : 0;
+
+        return (
+            "<div class='analytics-pro-item' " +
+            "onclick='bukaToolDariRanking(" +
+            JSON.stringify(nama) +
+            ")' style='cursor:pointer;'>" +
+
+            "<div class='analytics-pro-medal'>" +
+            medal[index] +
+            "</div>" +
+
+            "<div class='analytics-pro-main'>" +
+
+            "<div class='analytics-pro-name'>" +
+            "<span>" + nama + "</span>" +
+            "<span>" + jumlah + " kali</span>" +
+            "</div>" +
+
+            "<div class='analytics-pro-percent'>" +
+            persen + "% dari total penggunaan" +
+            "</div>" +
+
+            "<div class='analytics-pro-track'>" +
+            "<div class='analytics-pro-bar' " +
+            "data-persen='" + persen + "'></div>" +
+            "</div>" +
+
+            "</div>" +
+            "</div>"
+        );
+    }).join("");
+
+    setTimeout(function(){
+        container
+            .querySelectorAll(".analytics-pro-bar")
+            .forEach(function(bar){
+                bar.style.width =
+                    bar.dataset.persen + "%";
+            });
+    },50);
+}
+
+tampilkanAnalyticsPro();
 
 </script>
 </body>
