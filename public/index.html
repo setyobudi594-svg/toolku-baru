@@ -992,6 +992,48 @@ html{
 }
 </style>
 
+
+<style id="analytics-export-pro-css">
+.analytics-export-pro{
+    margin:16px 0;
+    padding:16px;
+    border:1px solid rgba(127,127,127,.18);
+    border-radius:16px;
+    background:var(--card-bg,#fff);
+}
+.analytics-export-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+}
+.analytics-export-title{
+    font-size:16px;
+    font-weight:800;
+}
+.analytics-export-subtitle{
+    margin-top:4px;
+    font-size:12px;
+    opacity:.68;
+}
+.analytics-export-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+.analytics-export-btn{
+    border:0;
+    border-radius:10px;
+    padding:10px 13px;
+    font-weight:700;
+    cursor:pointer;
+}
+.analytics-export-btn:active{
+    transform:scale(.97);
+}
+</style>
+
 </head>
 
 <body>
@@ -1165,6 +1207,26 @@ html{
 
     <div id="analyticsExecutiveInsight" class="analytics-executive-insight">
         💡 Belum ada insight.
+    </div>
+</div>
+
+
+<div id="analyticsExportPro" class="analytics-export-pro">
+    <div class="analytics-export-head">
+        <div>
+            <div class="analytics-export-title">📥 Export Laporan Analytics</div>
+            <div class="analytics-export-subtitle">
+                Simpan ringkasan performa ToolKu berdasarkan periode aktif.
+            </div>
+        </div>
+        <div class="analytics-export-actions">
+            <button class="analytics-export-btn" onclick="exportAnalyticsTXT()">
+                📄 TXT
+            </button>
+            <button class="analytics-export-btn" onclick="exportAnalyticsCSV()">
+                📊 CSV
+            </button>
+        </div>
     </div>
 </div>
 
@@ -3565,6 +3627,105 @@ function tampilkanAnalyticsSmartRecommendation(){
 </script>
 
 <script id="analytics-executive-pro-js">
+
+function exportAnalyticsTXT(){
+    try{
+        const periode = typeof periodeStatistikAktif !== "undefined"
+            ? periodeStatistikAktif
+            : "hari";
+
+        const data = typeof ambilStatistikPeriode === "function"
+            ? ambilStatistikPeriode(periode)
+            : {};
+
+        const daftar = Object.entries(data || {})
+            .sort((a,b) => b[1] - a[1]);
+
+        const namaPeriode = {
+            hari:"Hari Ini",
+            "7hari":"7 Hari",
+            "30hari":"30 Hari",
+            semua:"Semua"
+        }[periode] || periode;
+
+        let total = 0;
+        daftar.forEach(function(item){
+            total += Number(item[1]) || 0;
+        });
+
+        let isi = "";
+        isi += "TOOLKU — LAPORAN ANALYTICS\\n";
+        isi += "============================\\n";
+        isi += "Periode: " + namaPeriode + "\\n";
+        isi += "Total penggunaan: " + total + "\\n";
+        isi += "Jumlah tool digunakan: " + daftar.length + "\\n\\n";
+        isi += "RANKING TOOL\\n";
+        isi += "------------\\n";
+
+        if(!daftar.length){
+            isi += "Belum ada data penggunaan.\\n";
+        }else{
+            daftar.forEach(function(item,index){
+                isi += (index+1) + ". " + item[0] + " — " + item[1] + " penggunaan\\n";
+            });
+        }
+
+        isi += "\\nDibuat oleh ToolKu\\n";
+
+        const blob = new Blob([isi], {type:"text/plain;charset=utf-8"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        const tanggal = new Date().toISOString().slice(0,10);
+        a.href = url;
+        a.download = "toolku-analytics-" + tanggal + ".txt";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    }catch(e){
+        console.error("Export TXT gagal:",e);
+        alert("Export laporan gagal.");
+    }
+}
+
+function exportAnalyticsCSV(){
+    try{
+        const periode = typeof periodeStatistikAktif !== "undefined"
+            ? periodeStatistikAktif
+            : "hari";
+
+        const data = typeof ambilStatistikPeriode === "function"
+            ? ambilStatistikPeriode(periode)
+            : {};
+
+        const daftar = Object.entries(data || {})
+            .sort((a,b) => b[1] - a[1]);
+
+        let csv = "Ranking,Tool,Penggunaan\\n";
+
+        daftar.forEach(function(item,index){
+            const nama = String(item[0]).replace(/"/g,'""');
+            csv += (index+1) + ',"' + nama + '",' + (Number(item[1]) || 0) + "\\n";
+        });
+
+        const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        const tanggal = new Date().toISOString().slice(0,10);
+        a.href = url;
+        a.download = "toolku-analytics-" + tanggal + ".csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    }catch(e){
+        console.error("Export CSV gagal:",e);
+        alert("Export laporan gagal.");
+    }
+}
+
 function tampilkanAnalyticsExecutive(){
     const totalEl = document.getElementById("analyticsExecutiveTotal");
     const topEl = document.getElementById("analyticsExecutiveTop");
