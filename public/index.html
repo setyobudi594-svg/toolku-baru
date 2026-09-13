@@ -1251,6 +1251,83 @@ html{
 }
 </style>
 
+
+<style id="analytics-health-v13-css">
+#analyticsHealthV13{
+    margin:16px 0;
+    padding:18px;
+    border:1px solid rgba(127,127,127,.18);
+    border-radius:18px;
+    background:var(--card-bg,#fff);
+}
+.analytics-v13-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+}
+.analytics-v13-title{
+    font-size:17px;
+    font-weight:800;
+}
+.analytics-v13-subtitle{
+    margin-top:4px;
+    font-size:12px;
+    opacity:.68;
+}
+.analytics-v13-status{
+    padding:7px 11px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:800;
+}
+.analytics-v13-ok{
+    background:rgba(46,125,50,.13);
+}
+.analytics-v13-warn{
+    background:rgba(245,124,0,.13);
+}
+.analytics-v13-error{
+    background:rgba(198,40,40,.13);
+}
+.analytics-v13-list{
+    display:grid;
+    gap:8px;
+}
+.analytics-v13-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:10px;
+    align-items:center;
+    padding:10px 12px;
+    border-radius:11px;
+    background:rgba(127,127,127,.07);
+    font-size:12px;
+}
+.analytics-v13-name{
+    font-weight:700;
+}
+.analytics-v13-result{
+    font-weight:800;
+}
+.analytics-v13-summary{
+    margin-top:12px;
+    padding:12px;
+    border-radius:12px;
+    background:rgba(127,127,127,.08);
+    font-size:12px;
+    line-height:1.45;
+}
+@media(max-width:600px){
+    .analytics-v13-row{
+        grid-template-columns:1fr;
+        gap:5px;
+    }
+}
+</style>
+
 </head>
 
 <body>
@@ -1429,6 +1506,32 @@ html{
 
 
 
+
+
+<div id="analyticsHealthV13">
+    <div class="analytics-v13-head">
+        <div>
+            <div class="analytics-v13-title">🩺 Analytics Health Check</div>
+            <div class="analytics-v13-subtitle">
+                Pemeriksaan otomatis komponen analytics ToolKu.
+            </div>
+        </div>
+        <div id="analyticsV13Status" class="analytics-v13-status analytics-v13-ok">
+            🟢 Normal
+        </div>
+    </div>
+
+    <div id="analyticsV13List" class="analytics-v13-list">
+        <div class="analytics-v13-row">
+            <span class="analytics-v13-name">Memeriksa analytics...</span>
+            <span class="analytics-v13-result">⏳</span>
+        </div>
+    </div>
+
+    <div id="analyticsV13Summary" class="analytics-v13-summary">
+        💡 Pemeriksaan belum selesai.
+    </div>
+</div>
 
 <div id="analyticsPerformanceV11">
     <div class="analytics-v11-head">
@@ -4072,6 +4175,88 @@ function tampilkanAnalyticsInsightPro(){
 
 
 
+
+function tampilkanAnalyticsHealthV13(){
+    const statusEl = document.getElementById("analyticsV13Status");
+    const listEl = document.getElementById("analyticsV13List");
+    const summaryEl = document.getElementById("analyticsV13Summary");
+
+    if(!statusEl || !listEl || !summaryEl){
+        return;
+    }
+
+    const pemeriksaan = [
+        ["Analytics Pro","tampilkanAnalyticsPro"],
+        ["Comparison","tampilkanAnalyticsComparison"],
+        ["Performance","tampilkanAnalyticsPerformance"],
+        ["Growth","tampilkanAnalyticsGrowth"],
+        ["Smart Recommendation","tampilkanAnalyticsSmartRecommendation"],
+        ["Executive Dashboard","tampilkanAnalyticsExecutive"],
+        ["Insight Otomatis","tampilkanAnalyticsInsightPro"],
+        ["Dashboard Interaktif","tampilkanAnalyticsInteractiveV10"],
+        ["Performance Monitor","tampilkanAnalyticsPerformanceV11"]
+    ];
+
+    let normal = 0;
+    let error = 0;
+
+    const hasil = pemeriksaan.map(function(item){
+        const nama = item[0];
+        const fungsi = item[1];
+
+        if(typeof window[fungsi] !== "function"){
+            error++;
+
+            return {
+                nama:nama,
+                label:"🔴 Tidak tersedia"
+            };
+        }
+
+        normal++;
+
+        return {
+            nama:nama,
+            label:"🟢 Siap"
+        };
+    });
+
+    let statusClass = "analytics-v13-ok";
+    let statusText = "🟢 Normal";
+
+    if(error > 0){
+        statusClass = "analytics-v13-error";
+        statusText = "🔴 Perlu perbaikan";
+    }
+
+    statusEl.className =
+        "analytics-v13-status " + statusClass;
+    statusEl.textContent = statusText;
+
+    listEl.innerHTML = hasil.map(function(item){
+        return '<div class="analytics-v13-row">' +
+               '<span class="analytics-v13-name">' +
+               item.nama +
+               '</span>' +
+               '<span class="analytics-v13-result">' +
+               item.label +
+               '</span>' +
+               '</div>';
+    }).join("");
+
+    if(error === 0){
+        summaryEl.textContent =
+            "💡 Semua " + pemeriksaan.length +
+            " komponen analytics terdeteksi dan siap digunakan.";
+    }else{
+        summaryEl.textContent =
+            "💡 " + normal +
+            " komponen siap digunakan dan " +
+            error +
+            " komponen memerlukan perhatian.";
+    }
+}
+
 function tampilkanAnalyticsPerformanceV11(){
     const periodEl = document.getElementById("analyticsV11Period");
     const upEl = document.getElementById("analyticsV11Up");
@@ -4640,7 +4825,8 @@ function tampilkanAnalyticsExecutive(){
             "tampilkanAnalyticsExecutive",
             "tampilkanAnalyticsInsightPro",
             "tampilkanAnalyticsInteractiveV10",
-            "tampilkanAnalyticsPerformanceV11"
+            "tampilkanAnalyticsPerformanceV11",
+            "tampilkanAnalyticsHealthV13"
         ];
 
         fungsi.forEach(function(namaFungsi){
