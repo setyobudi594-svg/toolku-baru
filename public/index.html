@@ -1331,6 +1331,21 @@ html{
 }
 </style>
 
+<style id="analytics-simple-v16-css">
+#analyticsComparisonPro,
+#analyticsHealthV13,
+#analyticsPerformanceV11,
+#analyticsInteractiveV10,
+#analyticsExportPro,
+#analyticsPerformancePro,
+#analyticsSmartRecommendation,
+#analyticsGrowthPro,
+#analyticsInsightPro,
+#analyticsProToolKu{
+    display:none;
+}
+</style>
+
 </head>
 
 <body>
@@ -4820,16 +4835,7 @@ function tampilkanAnalyticsExecutive(){
 (function(){
     function refreshSemuaAnalyticsV12(){
         const fungsi = [
-            "tampilkanAnalyticsPro",
-            "tampilkanAnalyticsComparison",
-            "tampilkanAnalyticsPerformance",
-            "tampilkanAnalyticsGrowth",
-            "tampilkanAnalyticsSmartRecommendation",
-            "tampilkanAnalyticsExecutive",
-            "tampilkanAnalyticsInsightPro",
-            "tampilkanAnalyticsInteractiveV10",
-            "tampilkanAnalyticsPerformanceV11",
-            "tampilkanAnalyticsHealthV13"
+            "tampilkanAnalyticsExecutive"
         ];
 
         fungsi.forEach(function(namaFungsi){
