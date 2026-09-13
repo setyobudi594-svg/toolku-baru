@@ -4627,6 +4627,60 @@ function tampilkanAnalyticsExecutive(){
 
 
 
+
+<script id="analytics-auto-refresh-v12-js">
+(function(){
+    function refreshSemuaAnalyticsV12(){
+        const fungsi = [
+            "tampilkanAnalyticsPro",
+            "tampilkanAnalyticsComparison",
+            "tampilkanAnalyticsPerformance",
+            "tampilkanAnalyticsGrowth",
+            "tampilkanAnalyticsSmartRecommendation",
+            "tampilkanAnalyticsExecutive",
+            "tampilkanAnalyticsInsightPro",
+            "tampilkanAnalyticsInteractiveV10",
+            "tampilkanAnalyticsPerformanceV11"
+        ];
+
+        fungsi.forEach(function(namaFungsi){
+            try{
+                if(typeof window[namaFungsi] === "function"){
+                    window[namaFungsi]();
+                }
+            }catch(error){
+                console.error("Analytics refresh gagal:", namaFungsi, error);
+            }
+        });
+    }
+
+    function mulaiAnalyticsAutoRefreshV12(){
+        refreshSemuaAnalyticsV12();
+
+        if(window.__toolkuAnalyticsRefreshV12){
+            return;
+        }
+
+        window.__toolkuAnalyticsRefreshV12 = setInterval(
+            refreshSemuaAnalyticsV12,
+            60000
+        );
+    }
+
+    if(document.readyState === "loading"){
+        document.addEventListener(
+            "DOMContentLoaded",
+            mulaiAnalyticsAutoRefreshV12,
+            {once:true}
+        );
+    }else{
+        mulaiAnalyticsAutoRefreshV12();
+    }
+
+    window.refreshSemuaAnalyticsV12 = refreshSemuaAnalyticsV12;
+})();
+</script>
+
 </body>
 </html>
 
