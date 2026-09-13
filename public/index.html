@@ -4851,8 +4851,12 @@ function tampilkanAnalyticsExecutive(){
         }
 
         window.__toolkuAnalyticsRefreshV12 = setInterval(
-            refreshSemuaAnalyticsV12,
-            60000
+            function(){
+                if(document.visibilityState === "visible"){
+                    refreshSemuaAnalyticsV12();
+                }
+            },
+            300000
         );
     }
 
