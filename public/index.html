@@ -1129,6 +1129,128 @@ html{
 }
 </style>
 
+
+<style id="analytics-performance-v11-css">
+#analyticsPerformanceV11{
+    margin:16px 0;
+    padding:18px;
+    border:1px solid rgba(127,127,127,.18);
+    border-radius:18px;
+    background:var(--card-bg,#fff);
+}
+.analytics-v11-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+}
+.analytics-v11-title{
+    font-size:17px;
+    font-weight:800;
+}
+.analytics-v11-subtitle{
+    margin-top:4px;
+    font-size:12px;
+    opacity:.68;
+}
+.analytics-v11-period{
+    padding:7px 11px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+    background:rgba(127,127,127,.10);
+}
+.analytics-v11-list{
+    display:grid;
+    gap:9px;
+}
+.analytics-v11-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto auto;
+    align-items:center;
+    gap:10px;
+    padding:11px 12px;
+    border-radius:12px;
+    background:rgba(127,127,127,.07);
+}
+.analytics-v11-tool{
+    min-width:0;
+    font-size:13px;
+    font-weight:700;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.analytics-v11-count{
+    font-size:12px;
+    opacity:.72;
+    white-space:nowrap;
+}
+.analytics-v11-status{
+    min-width:68px;
+    text-align:center;
+    padding:5px 7px;
+    border-radius:8px;
+    font-size:11px;
+    font-weight:800;
+}
+.analytics-v11-up{
+    background:rgba(46,125,50,.13);
+}
+.analytics-v11-down{
+    background:rgba(198,40,40,.13);
+}
+.analytics-v11-stable{
+    background:rgba(117,117,117,.13);
+}
+.analytics-v11-summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+    margin-bottom:14px;
+}
+.analytics-v11-summary-card{
+    padding:12px;
+    border-radius:12px;
+    background:rgba(127,127,127,.07);
+}
+.analytics-v11-summary-label{
+    font-size:11px;
+    opacity:.68;
+}
+.analytics-v11-summary-value{
+    margin-top:5px;
+    font-size:18px;
+    font-weight:800;
+}
+.analytics-v11-insight{
+    margin-top:13px;
+    padding:12px;
+    border-radius:12px;
+    background:rgba(127,127,127,.08);
+    font-size:12px;
+    line-height:1.45;
+}
+@media(max-width:600px){
+    .analytics-v11-summary{
+        grid-template-columns:1fr;
+    }
+    .analytics-v11-row{
+        grid-template-columns:minmax(0,1fr) auto;
+    }
+    .analytics-v11-status{
+        grid-column:2;
+        grid-row:1;
+    }
+    .analytics-v11-count{
+        grid-column:1;
+        grid-row:2;
+    }
+}
+</style>
+
 </head>
 
 <body>
@@ -1306,6 +1428,48 @@ html{
 </div>
 
 
+
+
+<div id="analyticsPerformanceV11">
+    <div class="analytics-v11-head">
+        <div>
+            <div class="analytics-v11-title">📈 Tool Performance Monitor</div>
+            <div class="analytics-v11-subtitle">
+                Perbandingan performa tool dengan periode sebelumnya.
+            </div>
+        </div>
+        <div id="analyticsV11Period" class="analytics-v11-period">
+            Hari Ini
+        </div>
+    </div>
+
+    <div class="analytics-v11-summary">
+        <div class="analytics-v11-summary-card">
+            <div class="analytics-v11-summary-label">🚀 Naik</div>
+            <div id="analyticsV11Up" class="analytics-v11-summary-value">0</div>
+        </div>
+        <div class="analytics-v11-summary-card">
+            <div class="analytics-v11-summary-label">📉 Turun</div>
+            <div id="analyticsV11Down" class="analytics-v11-summary-value">0</div>
+        </div>
+        <div class="analytics-v11-summary-card">
+            <div class="analytics-v11-summary-label">➡️ Stabil</div>
+            <div id="analyticsV11Stable" class="analytics-v11-summary-value">0</div>
+        </div>
+    </div>
+
+    <div id="analyticsV11List" class="analytics-v11-list">
+        <div class="analytics-v11-row">
+            <span class="analytics-v11-tool">Belum ada data</span>
+            <span class="analytics-v11-count">—</span>
+            <span class="analytics-v11-status analytics-v11-stable">Stabil</span>
+        </div>
+    </div>
+
+    <div id="analyticsV11Insight" class="analytics-v11-insight">
+        💡 Belum ada insight performa.
+    </div>
+</div>
 
 <div id="analyticsInteractiveV10">
     <div class="analytics-v10-head">
@@ -2227,6 +2391,10 @@ function pilihPeriodeStatistik(periode){
 
     if(typeof tampilkanAnalyticsInteractiveV10 === "function"){
         tampilkanAnalyticsInteractiveV10();
+    }
+
+    if(typeof tampilkanAnalyticsPerformanceV11 === "function"){
+        tampilkanAnalyticsPerformanceV11();
     }
 
     if(typeof tampilkanDashboardRingkas === "function"){
@@ -3902,6 +4070,229 @@ function tampilkanAnalyticsInsightPro(){
     }
 }
 
+
+
+function tampilkanAnalyticsPerformanceV11(){
+    const periodEl = document.getElementById("analyticsV11Period");
+    const upEl = document.getElementById("analyticsV11Up");
+    const downEl = document.getElementById("analyticsV11Down");
+    const stableEl = document.getElementById("analyticsV11Stable");
+    const listEl = document.getElementById("analyticsV11List");
+    const insightEl = document.getElementById("analyticsV11Insight");
+
+    if(!periodEl || !upEl || !downEl || !stableEl || !listEl || !insightEl){
+        return;
+    }
+
+    try{
+        const periode = typeof periodeStatistikAktif !== "undefined"
+            ? periodeStatistikAktif
+            : "hari";
+
+        const namaPeriode = {
+            hari:"Hari Ini",
+            "7hari":"7 Hari",
+            "30hari":"30 Hari",
+            semua:"Semua"
+        }[periode] || periode;
+
+        periodEl.textContent = namaPeriode;
+
+        const sekarang = typeof ambilStatistikPeriode === "function"
+            ? ambilStatistikPeriode(periode)
+            : {};
+
+        const sebelumnya = typeof ambilStatistikPeriodeSebelumnya === "function"
+            ? ambilStatistikPeriodeSebelumnya(periode)
+            : {};
+
+        if(periode === "semua"){
+            upEl.textContent = "—";
+            downEl.textContent = "—";
+            stableEl.textContent = Object.keys(sekarang || {}).length;
+
+            const semua = Object.entries(sekarang || {})
+                .map(function(item){
+                    return {
+                        nama:String(item[0]),
+                        sekarang:Number(item[1]) || 0
+                    };
+                })
+                .filter(function(item){
+                    return item.sekarang > 0;
+                })
+                .sort(function(a,b){
+                    return b.sekarang - a.sekarang;
+                })
+                .slice(0,10);
+
+            if(!semua.length){
+                listEl.innerHTML =
+                    '<div class="analytics-v11-row">' +
+                    '<span class="analytics-v11-tool">Belum ada data</span>' +
+                    '<span class="analytics-v11-count">—</span>' +
+                    '<span class="analytics-v11-status analytics-v11-stable">Stabil</span>' +
+                    '</div>';
+
+                insightEl.textContent =
+                    "💡 Belum ada data penggunaan.";
+                return;
+            }
+
+            listEl.innerHTML = semua.map(function(item,index){
+                return '<div class="analytics-v11-row">' +
+                       '<span class="analytics-v11-tool">' +
+                       (index+1) + ". " + item.nama +
+                       '</span>' +
+                       '<span class="analytics-v11-count">' +
+                       item.sekarang + ' penggunaan' +
+                       '</span>' +
+                       '<span class="analytics-v11-status analytics-v11-stable">Total</span>' +
+                       '</div>';
+            }).join("");
+
+            insightEl.textContent =
+                "💡 Mode Semua menampilkan ranking penggunaan tanpa perbandingan periode sebelumnya.";
+            return;
+        }
+
+        const namaSet = new Set([
+            ...Object.keys(sekarang || {}),
+            ...Object.keys(sebelumnya || {})
+        ]);
+
+        const hasil = Array.from(namaSet)
+            .map(function(nama){
+                const current = Number(sekarang[nama]) || 0;
+                const previous = Number(sebelumnya[nama]) || 0;
+                const perubahan = current - previous;
+
+                let status = "stabil";
+
+                if(perubahan > 0){
+                    status = "naik";
+                }else if(perubahan < 0){
+                    status = "turun";
+                }
+
+                return {
+                    nama:nama,
+                    current:current,
+                    previous:previous,
+                    perubahan:perubahan,
+                    status:status
+                };
+            })
+            .filter(function(item){
+                return item.current > 0 || item.previous > 0;
+            })
+            .sort(function(a,b){
+                if(b.perubahan !== a.perubahan){
+                    return b.perubahan - a.perubahan;
+                }
+                return b.current - a.current;
+            });
+
+        let naik = 0;
+        let turun = 0;
+        let stabil = 0;
+
+        hasil.forEach(function(item){
+            if(item.status === "naik") naik++;
+            else if(item.status === "turun") turun++;
+            else stabil++;
+        });
+
+        upEl.textContent = naik;
+        downEl.textContent = turun;
+        stableEl.textContent = stabil;
+
+        if(!hasil.length){
+            listEl.innerHTML =
+                '<div class="analytics-v11-row">' +
+                '<span class="analytics-v11-tool">Belum ada data</span>' +
+                '<span class="analytics-v11-count">—</span>' +
+                '<span class="analytics-v11-status analytics-v11-stable">Stabil</span>' +
+                '</div>';
+
+            insightEl.textContent =
+                "💡 Belum ada penggunaan yang dapat dibandingkan.";
+            return;
+        }
+
+        listEl.innerHTML = hasil.slice(0,10).map(function(item){
+            let label = "Stabil";
+            let cls = "analytics-v11-stable";
+            let icon = "➡️";
+
+            if(item.status === "naik"){
+                label = "Naik +" + item.perubahan;
+                cls = "analytics-v11-up";
+                icon = "🚀";
+            }else if(item.status === "turun"){
+                label = "Turun " + item.perubahan;
+                cls = "analytics-v11-down";
+                icon = "📉";
+            }
+
+            return '<div class="analytics-v11-row">' +
+                   '<span class="analytics-v11-tool">' +
+                   item.nama +
+                   '</span>' +
+                   '<span class="analytics-v11-count">' +
+                   item.current + ' vs ' + item.previous +
+                   '</span>' +
+                   '<span class="analytics-v11-status ' + cls + '">' +
+                   icon + ' ' + label +
+                   '</span>' +
+                   '</div>';
+        }).join("");
+
+        const terbaik = hasil.find(function(item){
+            return item.perubahan > 0;
+        });
+
+        const terendah = hasil.slice().sort(function(a,b){
+            return a.perubahan - b.perubahan;
+        }).find(function(item){
+            return item.perubahan < 0;
+        });
+
+        if(terbaik && terendah){
+            insightEl.textContent =
+                "💡 " + terbaik.nama +
+                " memiliki peningkatan terbesar sebesar +" +
+                terbaik.perubahan +
+                " penggunaan, sementara " +
+                terendah.nama +
+                " mengalami penurunan " +
+                Math.abs(terendah.perubahan) +
+                ".";
+        }else if(terbaik){
+            insightEl.textContent =
+                "💡 Performa terbaik saat ini adalah " +
+                terbaik.nama +
+                " dengan peningkatan +" +
+                terbaik.perubahan +
+                " penggunaan.";
+        }else if(terendah){
+            insightEl.textContent =
+                "💡 Perlu perhatian: " +
+                terendah.nama +
+                " mengalami penurunan " +
+                Math.abs(terendah.perubahan) +
+                " penggunaan dibanding periode sebelumnya.";
+        }else{
+            insightEl.textContent =
+                "💡 Performa tool relatif stabil pada periode ini.";
+        }
+
+    }catch(error){
+        console.error("Tool Performance Monitor v11 gagal:",error);
+        insightEl.textContent =
+            "⚠️ Monitor performa belum dapat dihitung.";
+    }
+}
 
 function tampilkanAnalyticsInteractiveV10(){
     const totalEl = document.getElementById("analyticsV10Total");
