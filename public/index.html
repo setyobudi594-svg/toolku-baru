@@ -1385,6 +1385,50 @@ html{
     <button class="kategori-btn" onclick="filterKategori('keamanan', this)">🔐 Keamanan</button>
 </div>
 
+<div class="tools">
+
+<a href="kalkulator.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('Kalkulator')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('kalkulator.html', this)">☆</button>
+    <div class="icon">🧮</div>
+    <h2>Kalkulator</h2>
+    <p>Hitung angka dengan cepat dan mudah.</p>
+    <div class="statistik" data-statistik="Kalkulator"></div>
+</a>
+
+<a href="qrcode.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('QR Code')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('qrcode.html', this)">☆</button>
+    <div class="icon">🔳</div>
+    <h2>QR Code</h2>
+    <p>Buat QR Code dari teks atau link.</p>
+    <div class="statistik" data-statistik="QR Code"></div>
+</a>
+
+<a href="catatan.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('Catatan')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('catatan.html', this)">☆</button>
+    <div class="icon">📝</div>
+    <h2>Catatan</h2>
+    <p>Simpan catatan langsung di browser.</p>
+    <div class="statistik" data-statistik="Catatan"></div>
+</a>
+
+<a href="password.html" class="tool" data-kategori="keamanan" onclick="catatToolTerakhir('Password')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('password.html', this)">☆</button>
+    <div class="icon">🔐</div>
+    <h2>Password</h2>
+    <p>Buat password acak yang kuat.</p>
+    <div class="statistik" data-statistik="Password"></div>
+</a>
+
+<a href="resize.html" class="tool" data-kategori="foto" onclick="catatToolTerakhir('Resize Foto')">
+    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('resize.html', this)">☆</button>
+    <div class="icon">🖼️</div>
+    <h2>Resize Foto</h2>
+    <p>Ubah ukuran foto dengan mudah.</p>
+    <div class="statistik" data-statistik="Resize Foto"></div>
+</a>
+
+</div>
+
 <a id="terakhir" class="terakhir" href="#"></a>
 
 <div id="dashboard" class="dashboard">
@@ -1789,49 +1833,7 @@ html{
     <small>Coba kata kunci lain.</small>
 </div>
 
-<div class="tools">
 
-<a href="kalkulator.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('Kalkulator')">
-    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('kalkulator.html', this)">☆</button>
-    <div class="icon">🧮</div>
-    <h2>Kalkulator</h2>
-    <p>Hitung angka dengan cepat dan mudah.</p>
-    <div class="statistik" data-statistik="Kalkulator"></div>
-</a>
-
-<a href="qrcode.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('QR Code')">
-    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('qrcode.html', this)">☆</button>
-    <div class="icon">🔳</div>
-    <h2>QR Code</h2>
-    <p>Buat QR Code dari teks atau link.</p>
-    <div class="statistik" data-statistik="QR Code"></div>
-</a>
-
-<a href="catatan.html" class="tool" data-kategori="utilitas" onclick="catatToolTerakhir('Catatan')">
-    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('catatan.html', this)">☆</button>
-    <div class="icon">📝</div>
-    <h2>Catatan</h2>
-    <p>Simpan catatan langsung di browser.</p>
-    <div class="statistik" data-statistik="Catatan"></div>
-</a>
-
-<a href="password.html" class="tool" data-kategori="keamanan" onclick="catatToolTerakhir('Password')">
-    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('password.html', this)">☆</button>
-    <div class="icon">🔐</div>
-    <h2>Password</h2>
-    <p>Buat password acak yang kuat.</p>
-    <div class="statistik" data-statistik="Password"></div>
-</a>
-
-<a href="resize.html" class="tool" data-kategori="foto" onclick="catatToolTerakhir('Resize Foto')">
-    <button class="favorit" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorit('resize.html', this)">☆</button>
-    <div class="icon">🖼️</div>
-    <h2>Resize Foto</h2>
-    <p>Ubah ukuran foto dengan mudah.</p>
-    <div class="statistik" data-statistik="Resize Foto"></div>
-</a>
-
-</div>
 </div>
 
 <footer>
