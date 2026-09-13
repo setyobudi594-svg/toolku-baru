@@ -475,7 +475,7 @@ body{
     height:100%;
     background:rgba(255,255,255,.22);
     transform:skewX(-20deg);
-    animation:shimmerGrafik 2s ease-in-out infinite;
+    animation:none;
 }
 
 @keyframes shimmerGrafik{
@@ -1859,13 +1859,7 @@ function aktifkanNav(tombol){
     tombol.classList.add("active");
 }
 
-window.addEventListener("scroll", function(){
-    if(window.scrollY < 50){
-        document.querySelectorAll(".bottom-nav a").forEach(function(item, index){
-            item.classList.toggle("active", index === 0);
-        });
-    }
-});
+
 
 function catatWaktuPenggunaan(nama){
     let log = JSON.parse(
@@ -3028,7 +3022,7 @@ window.addEventListener("pageshow", terapkanTema);
 </script>
 
 <nav class="bottom-nav">
-    <a href="javascript:window.scrollTo({top:0, behavior:'smooth'})" class="active" onclick="aktifkanNav(this)">
+    <a href="javascript:window.scrollTo(0,0)" class="active" onclick="aktifkanNav(this)">
         <span>🏠</span>
         Beranda
     </a>
@@ -3045,39 +3039,6 @@ window.addEventListener("pageshow", terapkanTema);
         Statistik
     </a>
 </nav>
-<script>
-const bagianNav = [
-    {id: "dashboard", index: 3},
-    {id: "riwayat", index: 2}
-];
-
-const observerNav = new IntersectionObserver(function(entries){
-    if(window.scrollY < 50){
-        document.querySelectorAll(".bottom-nav a").forEach(function(item, i){
-            item.classList.toggle("active", i === 0);
-        });
-        return;
-    }
-
-    entries.forEach(function(entry){
-        if(entry.isIntersecting){
-            const index = entry.target.dataset.navIndex;
-            document.querySelectorAll(".bottom-nav a").forEach(function(item, i){
-                item.classList.toggle("active", i == index);
-            });
-        }
-    });
-}, {threshold: 0.35});
-
-bagianNav.forEach(function(item){
-    const el = document.getElementById(item.id);
-    if(el){
-        el.dataset.navIndex = item.index;
-        observerNav.observe(el);
-    }
-});
-</script>
-
 <script>
 
 function tampilkanTrenStatistik(){
