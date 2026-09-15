@@ -2965,9 +2965,14 @@ function terapkanTema(){
 terapkanTema();
 tampilkanRiwayat();
 tampilkanDashboard();
-tampilkanStatistik();
-tampilkanPopuler();
-tampilkanToolTerakhir();
+
+requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+        tampilkanStatistik();
+        tampilkanPopuler();
+        tampilkanToolTerakhir();
+    });
+});
 
 window.addEventListener("pageshow", terapkanTema);
 </script>
