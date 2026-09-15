@@ -2588,16 +2588,18 @@ function tampilkanDashboard(){
         statistikKategoriElemen.innerHTML = hasilKategori.join("");
     }
 
+    let dataRanking = Object.keys(statistik)
+        .filter(function(nama){
+            return (statistik[nama] || 0) > 0;
+        })
+        .sort(function(a, b){
+            return (statistik[b] || 0) - (statistik[a] || 0);
+        });
+
     let grafikToolElemen = document.getElementById("barGrafikTool");
 
     if(grafikToolElemen){
-        let dataGrafik = Object.keys(statistik)
-            .filter(function(nama){
-                return (statistik[nama] || 0) > 0;
-            })
-            .sort(function(a, b){
-                return (statistik[b] || 0) - (statistik[a] || 0);
-            });
+        let dataGrafik = dataRanking;
 
         if(dataGrafik.length === 0){
             grafikToolElemen.innerHTML = "Belum ada data penggunaan";
@@ -2624,13 +2626,7 @@ function tampilkanDashboard(){
     let rankingToolElemen = document.getElementById("daftarRankingTool");
 
     if(rankingToolElemen){
-        let ranking = Object.keys(statistik)
-            .filter(function(nama){
-                return (statistik[nama] || 0) > 0;
-            })
-            .sort(function(a, b){
-                return (statistik[b] || 0) - (statistik[a] || 0);
-            });
+        let ranking = dataRanking;
 
         if(ranking.length === 0){
             rankingToolElemen.innerHTML = "Belum ada data penggunaan";
@@ -2655,17 +2651,8 @@ function tampilkanDashboard(){
     let terpopulerElemen = document.getElementById("toolTerpopulerDashboard");
 
     if(terpopulerElemen){
-        let namaTerpopuler = null;
-        let jumlahTerpopuler = 0;
-
-        Object.keys(statistik).forEach(function(nama){
-            let jumlah = statistik[nama] || 0;
-
-            if(jumlah > jumlahTerpopuler){
-                namaTerpopuler = nama;
-                jumlahTerpopuler = jumlah;
-            }
-        });
+        let namaTerpopuler = dataRanking.length ? dataRanking[0] : null;
+        let jumlahTerpopuler = namaTerpopuler ? (statistik[namaTerpopuler] || 0) : 0;
 
         terpopulerElemen.innerHTML = namaTerpopuler
             ? "🔥 Terpopuler: <strong>" + namaTerpopuler + "</strong> — " + jumlahTerpopuler + " kali" +
