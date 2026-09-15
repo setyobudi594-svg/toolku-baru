@@ -4778,15 +4778,8 @@ function tampilkanAnalyticsExecutive(){
         );
     }
 
-    if(document.readyState === "loading"){
-        document.addEventListener(
-            "DOMContentLoaded",
-            mulaiAnalyticsAutoRefreshV12,
-            {once:true}
-        );
-    }else{
-        mulaiAnalyticsAutoRefreshV12();
-    }
+    // V25: auto-refresh Analytics V12 dinonaktifkan.
+    // Fungsi refresh tetap dipertahankan untuk penggunaan manual.
 
     window.refreshSemuaAnalyticsV12 = refreshSemuaAnalyticsV12;
 })();
