@@ -2478,18 +2478,6 @@ function ambilStatistikPeriode(periode){
 function pilihPeriodeStatistik(periode){
     periodeStatistikAktif = periode;
 
-    if(typeof tampilkanAnalyticsExecutive === "function"){
-        tampilkanAnalyticsExecutive();
-    }
-
-    if(typeof tampilkanDashboardRingkas === "function"){
-        tampilkanDashboardRingkas();
-    }
-
-    if(typeof tampilkanTrenStatistik === "function"){
-        tampilkanTrenStatistik();
-    }
-
     document.querySelectorAll(".periode-btn").forEach(function(btn){
         btn.classList.remove("aktif");
     });
@@ -2503,6 +2491,20 @@ function pilihPeriodeStatistik(periode){
     }
 
     tampilkanDashboard();
+
+    requestAnimationFrame(function(){
+        if(typeof tampilkanAnalyticsExecutive === "function"){
+            tampilkanAnalyticsExecutive();
+        }
+
+        if(typeof tampilkanDashboardRingkas === "function"){
+            tampilkanDashboardRingkas();
+        }
+
+        if(typeof tampilkanTrenStatistik === "function"){
+            tampilkanTrenStatistik();
+        }
+    });
 }
 
 function animasiAngkaStatistik(elemen, nilaiAkhir){
