@@ -2703,14 +2703,20 @@ function tampilkanPopuler(){
         "Resize Foto": "🖼️"
     };
 
-    let data = Object.keys(statistik)
-        .filter(function(nama){
-            return tujuan[nama] && statistik[nama] > 0;
-        })
-        .sort(function(a, b){
-            return statistik[b] - statistik[a];
-        })
-        .slice(0, 3);
+    let data = [
+        "Kalkulator",
+        "QR Code",
+        "Catatan",
+        "Password",
+        "Resize Foto"
+    ]
+    .filter(function(nama){
+        return statistik[nama] > 0;
+    })
+    .sort(function(a, b){
+        return statistik[b] - statistik[a];
+    })
+    .slice(0, 3);
 
     let kotak = document.getElementById("populer");
     let daftar = document.getElementById("daftarPopuler");
