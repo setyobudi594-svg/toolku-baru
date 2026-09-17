@@ -1,4 +1,4 @@
-const CACHE_NAME = "toolku-v5";
+const CACHE_NAME = "toolku-v6";
 
 const FILES_TO_CACHE = [
     "./",
@@ -13,7 +13,8 @@ const FILES_TO_CACHE = [
     "./password.html",
     "./resize.html",
     "./icons/icon-192.png",
-    "./icons/icon-512.png"
+    "./icons/icon-512.png",
+    "./qrcode.min.js"
 ];
 
 self.addEventListener("install", event => {
