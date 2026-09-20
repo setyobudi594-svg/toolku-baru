@@ -91,6 +91,10 @@
     <h1>🔳 QR Code</h1>
 
     <textarea id="text" placeholder="Masukkan teks atau link..."></textarea>
+    <div id="charCount"
+        style="margin-top:6px;text-align:right;font-size:13px;opacity:.65;">
+        0 / 2000 karakter
+    </div>
 
     <button onclick="generateQR()">
         Buat QR Code
@@ -133,11 +137,29 @@
 
 <script>
 
+const textInput = document.getElementById("text");
+const charCount = document.getElementById("charCount");
+const MAX_QR_LENGTH = 2000;
+
+function updateCharCount() {
+    const length = textInput.value.length;
+    charCount.textContent = `${length} / ${MAX_QR_LENGTH} karakter`;
+
+    if (length > MAX_QR_LENGTH) {
+        charCount.style.opacity = "1";
+        charCount.textContent = `${length} / ${MAX_QR_LENGTH} karakter — terlalu panjang`;
+    }
+}
+
+textInput.addEventListener("input", updateCharCount);
+updateCharCount();
+
 const resetButton = document.getElementById("resetQR");
 
 resetButton.onclick = function() {
     document.getElementById("text").value = "";
     document.getElementById("qrcode").innerHTML = "";
+    updateCharCount();
     document.getElementById("qr-actions").style.display = "none";
     document.getElementById("copyQR").style.display = "none";
     document.getElementById("shareQR").style.display = "none";
@@ -160,6 +182,11 @@ function generateQR() {
 
     if (text.trim() === "") {
         alert("Masukkan teks atau link terlebih dahulu.");
+        return;
+    }
+
+    if (text.length > MAX_QR_LENGTH) {
+        alert("Teks terlalu panjang. Maksimal 2000 karakter.");
         return;
     }
 
