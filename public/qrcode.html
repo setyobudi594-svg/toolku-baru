@@ -99,6 +99,19 @@
     <div id="qrcode"></div>
 
     <div id="qr-actions" style="margin-top:18px;display:none;text-align:center;">
+    <div id="qr-secondary-actions"
+        style="margin-top:10px;display:flex;gap:10px;">
+        <button id="copyQR" type="button"
+            style="display:none;flex:1;padding:12px;border:0;border-radius:12px;background:#16a34a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">
+            📋 Salin Isi
+        </button>
+
+        <button id="shareQR" type="button"
+            style="display:none;flex:1;padding:12px;border:0;border-radius:12px;background:#7c3aed;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">
+            📤 Bagikan QR
+        </button>
+    </div>
+
         <button id="downloadQR" type="button"
             style="width:100%;padding:14px 18px;border:0;border-radius:12px;background:#2563eb;color:#fff;font-size:16px;font-weight:600;cursor:pointer;">
             ⬇️ Download QR Code
@@ -135,8 +148,73 @@ function generateQR() {
 
       const actions = document.getElementById("qr-actions");
       const downloadButton = document.getElementById("downloadQR");
+      const copyButton = document.getElementById("copyQR");
+      const shareButton = document.getElementById("shareQR");
 
       actions.style.display = "block";
+      copyButton.style.display = "block";
+      shareButton.style.display = "block";
+
+      copyButton.onclick = async function() {
+          const value = document.getElementById("text").value;
+
+          try {
+              await navigator.clipboard.writeText(value);
+              copyButton.textContent = "✅ Tersalin";
+              setTimeout(() => {
+                  copyButton.textContent = "📋 Salin Isi";
+              }, 1500);
+          } catch (error) {
+              alert("Tidak bisa menyalin otomatis.");
+          }
+      };
+
+      shareButton.onclick = async function() {
+          const canvas = qr.querySelector("canvas");
+
+          if (!canvas) {
+              alert("QR Code belum siap untuk dibagikan.");
+              return;
+          }
+
+          if (!navigator.share) {
+              alert("Fitur berbagi tidak didukung browser ini. Gunakan Download QR Code.");
+              return;
+          }
+
+          try {
+              const blob = await new Promise(resolve =>
+                  canvas.toBlob(resolve, "image/png")
+              );
+
+              if (!blob) {
+                  alert("Gagal menyiapkan QR Code.");
+                  return;
+              }
+
+              const file = new File(
+                  [blob],
+                  "toolku-qrcode.png",
+                  { type: "image/png" }
+              );
+
+              const shareData = {
+                  title: "ToolKu QR Code",
+                  text: document.getElementById("text").value
+              };
+
+              if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                  shareData.files = [file];
+              }
+
+              await navigator.share(shareData);
+
+          } catch (error) {
+              if (error.name !== "AbortError") {
+                  alert("QR Code gagal dibagikan.");
+              }
+          }
+      };
 
       downloadButton.onclick = function() {
           const canvas = qr.querySelector("canvas");
