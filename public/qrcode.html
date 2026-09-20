@@ -115,6 +115,11 @@
         🔄 Reset QR
     </button>
 
+    <button id="zoomQR" type="button"
+        style="display:none;margin-top:10px;width:100%;padding:12px;border:0;border-radius:12px;background:#0f172a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">
+        🔍 Perbesar QR
+    </button>
+
     <div id="qr-actions" style="margin-top:18px;display:none;text-align:center;">
     <div id="qr-secondary-actions"
         style="margin-top:10px;display:flex;gap:10px;">
@@ -139,6 +144,26 @@
         ← Kembali ke ToolKu
     </a>
 
+</div>
+
+
+<div id="qrZoomModal"
+    style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.82);align-items:center;justify-content:center;padding:20px;">
+
+    <div style="position:relative;background:#fff;border-radius:20px;padding:24px;max-width:90vw;text-align:center;">
+
+        <button id="closeQRZoom" type="button"
+            style="position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;border-radius:50%;background:#e5e7eb;font-size:20px;cursor:pointer;">
+            ×
+        </button>
+
+        <div style="font-weight:700;margin:4px 36px 18px 0;color:#111827;">
+            QR Code
+        </div>
+
+        <div id="qrZoomContent"></div>
+
+    </div>
 </div>
 
 <script src="./qrcode.min.js"></script>
@@ -202,6 +227,8 @@ resetButton.onclick = function() {
     document.getElementById("qr-actions").style.display = "none";
     document.getElementById("copyQR").style.display = "none";
     document.getElementById("shareQR").style.display = "none";
+    document.getElementById("zoomQR").style.display = "none";
+    document.getElementById("qrZoomModal").style.display = "none";
 
     actionButtons.forEach(function(button) {
         button.disabled = true;
@@ -256,6 +283,44 @@ function generateQR() {
       const downloadButton = document.getElementById("downloadQR");
       const copyButton = document.getElementById("copyQR");
       const shareButton = document.getElementById("shareQR");
+      const zoomButton = document.getElementById("zoomQR");
+      const zoomModal = document.getElementById("qrZoomModal");
+      const zoomContent = document.getElementById("qrZoomContent");
+      const closeZoom = document.getElementById("closeQRZoom");
+
+      zoomButton.style.display = "block";
+
+      zoomButton.onclick = function() {
+          const canvas = qr.querySelector("canvas");
+
+          if (!canvas) {
+              alert("QR Code belum siap.");
+              return;
+          }
+
+          zoomContent.innerHTML = "";
+
+          const preview = document.createElement("img");
+          preview.src = canvas.toDataURL("image/png");
+          preview.alt = "QR Code ToolKu";
+          preview.style.width = "min(320px, 70vw)";
+          preview.style.height = "auto";
+          preview.style.imageRendering = "pixelated";
+          preview.style.display = "block";
+
+          zoomContent.appendChild(preview);
+          zoomModal.style.display = "flex";
+      };
+
+      closeZoom.onclick = function() {
+          zoomModal.style.display = "none";
+      };
+
+      zoomModal.onclick = function(event) {
+          if (event.target === zoomModal) {
+              zoomModal.style.display = "none";
+          }
+      };
 
       actions.style.display = "block";
       copyButton.style.display = "block";
