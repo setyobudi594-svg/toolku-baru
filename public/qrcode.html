@@ -166,9 +166,139 @@
     </div>
 </div>
 
+
+<section id="qrHistorySection"
+    style="margin-top:24px;text-align:left;">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+        <strong style="font-size:16px;">🕘 Riwayat QR</strong>
+
+        <button id="clearQRHistory" type="button"
+            style="border:0;background:none;color:#dc2626;font-size:13px;cursor:pointer;">
+            Hapus semua
+        </button>
+    </div>
+
+    <div id="qrHistory"
+        style="display:flex;flex-direction:column;gap:8px;">
+    </div>
+
+    <div id="qrHistoryEmpty"
+        style="font-size:13px;opacity:.65;padding:12px 0;">
+        Belum ada riwayat QR.
+    </div>
+
+</section>
+
 <script src="./qrcode.min.js"></script>
 
 <script>
+
+const QR_HISTORY_KEY = "toolku_qr_history";
+const QR_HISTORY_LIMIT = 8;
+
+const historyContainer = document.getElementById("qrHistory");
+const historyEmpty = document.getElementById("qrHistoryEmpty");
+const clearHistoryButton = document.getElementById("clearQRHistory");
+
+function getQRHistory() {
+    try {
+        const data = JSON.parse(localStorage.getItem(QR_HISTORY_KEY) || "[]");
+        return Array.isArray(data) ? data : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveQRHistory(value) {
+    const text = value.trim();
+
+    if (!text) return;
+
+    let history = getQRHistory();
+
+    history = history.filter(item => item !== text);
+    history.unshift(text);
+    history = history.slice(0, QR_HISTORY_LIMIT);
+
+    localStorage.setItem(QR_HISTORY_KEY, JSON.stringify(history));
+    renderQRHistory();
+}
+
+function renderQRHistory() {
+    const history = getQRHistory();
+
+    historyContainer.innerHTML = "";
+    historyEmpty.style.display = history.length ? "none" : "block";
+
+    history.forEach(function(value) {
+        const row = document.createElement("div");
+
+        row.style.cssText =
+            "display:flex;align-items:center;gap:8px;padding:10px;" +
+            "border:1px solid #e5e7eb;border-radius:12px;" +
+            "background:#fff;";
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.textContent =
+            value.length > 70 ? value.slice(0, 70) + "…" : value;
+
+        button.title = value;
+
+        button.style.cssText =
+            "flex:1;text-align:left;border:0;background:none;" +
+            "padding:0;color:#111827;font-size:13px;cursor:pointer;" +
+            "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
+
+        button.onclick = function() {
+            textInput.value = value;
+            updateCharCount();
+            generateQR();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        const remove = document.createElement("button");
+
+        remove.type = "button";
+        remove.textContent = "×";
+        remove.title = "Hapus dari riwayat";
+
+        remove.style.cssText =
+            "width:30px;height:30px;border:0;border-radius:8px;" +
+            "background:#fee2e2;color:#dc2626;font-size:18px;cursor:pointer;";
+
+        remove.onclick = function() {
+            const updated = getQRHistory().filter(item => item !== value);
+
+            localStorage.setItem(
+                QR_HISTORY_KEY,
+                JSON.stringify(updated)
+            );
+
+            renderQRHistory();
+        };
+
+        row.appendChild(button);
+        row.appendChild(remove);
+        historyContainer.appendChild(row);
+    });
+}
+
+clearHistoryButton.onclick = function() {
+    const history = getQRHistory();
+
+    if (!history.length) return;
+
+    if (!confirm("Hapus semua riwayat QR?")) return;
+
+    localStorage.removeItem(QR_HISTORY_KEY);
+    renderQRHistory();
+};
+
+renderQRHistory();
+
 
 const textInput = document.getElementById("text");
 const charCount = document.getElementById("charCount");
@@ -278,6 +408,8 @@ function generateQR() {
     });
 
       setQRStatus("QR Code berhasil dibuat", "success");
+
+      saveQRHistory(text);
 
       const actions = document.getElementById("qr-actions");
       const downloadButton = document.getElementById("downloadQR");
