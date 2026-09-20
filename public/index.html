@@ -2787,43 +2787,8 @@ function tampilkanToolTerakhir(){
     kotak.style.display = "block";
 }
 
-function filterKategori(kategori, tombol){
-    modeFavorit = false;
-
-    let filterFavorit = document.getElementById("filterFavorit");
-    if(filterFavorit){
-        filterFavorit.classList.remove("aktif");
-        filterFavorit.textContent = "⭐ Favorit Saya";
-    }
-
-    document.querySelectorAll(".kategori-btn").forEach(function(btn){
-        btn.classList.remove("aktif");
-    });
-
-    tombol.classList.add("aktif");
-
-    let tools = document.querySelectorAll(".tool");
-
-    tools.forEach(function(tool){
-        if(kategori === "semua"){
-            tool.style.display = "block";
-        } else {
-            tool.style.display =
-                tool.dataset.kategori === kategori ? "block" : "none";
-        }
-    });
-
-    let adaHasil = Array.from(tools).some(function(tool){
-        return tool.style.display !== "none";
-    });
-
-    document.getElementById("pesanTidakDitemukan").style.display =
-        adaHasil ? "none" : "block";
-}
-
-function cariTool(){
-    let input = document.getElementById("search").value.toLowerCase();
-    let tools = document.querySelectorAll(".tool");
+function terapkanFilter(){
+    let input = document.getElementById("search").value.toLowerCase().trim();
 
     let kategoriAktif = document.querySelector(".kategori-btn.aktif");
     let kategori = kategoriAktif
@@ -2831,10 +2796,13 @@ function cariTool(){
         : "semua";
 
     let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
+    let tools = document.querySelectorAll(".tool");
 
     tools.forEach(function(tool){
         let text = tool.innerText.toLowerCase();
+
         let cocokSearch = text.includes(input);
+
         let cocokKategori =
             kategori === "semua" ||
             tool.dataset.kategori === kategori;
@@ -2843,6 +2811,7 @@ function cariTool(){
         let onclick = tombolFavorit
             ? tombolFavorit.getAttribute("onclick")
             : "";
+
         let cocok = onclick.match(/toggleFavorit\('([^']+)'/);
 
         let cocokFavorit =
@@ -2863,6 +2832,29 @@ function cariTool(){
         adaHasil ? "none" : "block";
 }
 
+function filterKategori(kategori, tombol){
+    modeFavorit = false;
+
+    let navFavorit = document.querySelector(".nav-menu button");
+
+    if(navFavorit){
+        navFavorit.classList.remove("aktif");
+        navFavorit.textContent = "⭐ Favorit";
+    }
+
+    document.querySelectorAll(".kategori-btn").forEach(function(btn){
+        btn.classList.remove("aktif");
+    });
+
+    tombol.classList.add("aktif");
+
+    terapkanFilter();
+}
+
+function cariTool(){
+    terapkanFilter();
+}
+
 function toggleFavorit(nama, tombol){
     let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
 
@@ -2881,7 +2873,7 @@ function toggleFavorit(nama, tombol){
     localStorage.setItem("favoritTool", JSON.stringify(favorit));
 
     if(typeof modeFavorit !== "undefined" && modeFavorit){
-        tampilkanFavoritAktif();
+        terapkanFilter();
     }
 }
 
@@ -2919,32 +2911,23 @@ function tampilkanFavoritAktif(){
 function tampilkanFavorit(){
     modeFavorit = !modeFavorit;
 
-    let favorit = JSON.parse(localStorage.getItem("favoritTool") || "[]");
-
-    document.querySelectorAll(".tool").forEach(function(tool){
-        let tombolFavorit = tool.querySelector(".favorit");
-        let onclick = tombolFavorit ? tombolFavorit.getAttribute("onclick") : "";
-        let cocok = onclick.match(/toggleFavorit\('([^']+)'/);
-
-        if(modeFavorit){
-            tool.style.display =
-                cocok && favorit.includes(cocok[1]) ? "block" : "none";
-        } else {
-            tool.style.display = "block";
-        }
-    });
-
     let navFavorit = document.querySelector(".nav-menu button");
 
     if(navFavorit){
         navFavorit.classList.toggle("aktif", modeFavorit);
-        navFavorit.textContent = modeFavorit ? "⭐ Semua Tool" : "⭐ Favorit";
+        navFavorit.textContent =
+            modeFavorit ? "⭐ Semua Tool" : "⭐ Favorit";
     }
+
+    terapkanFilter();
 
     let bottomNav = document.querySelectorAll(".bottom-nav a");
 
     bottomNav.forEach(function(item, index){
-        item.classList.toggle("active", modeFavorit ? index === 1 : index === 0);
+        item.classList.toggle(
+            "active",
+            modeFavorit ? index === 1 : index === 0
+        );
     });
 }
 
