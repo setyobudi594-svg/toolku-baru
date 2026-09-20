@@ -98,6 +98,13 @@
 
     <div id="qrcode"></div>
 
+    <div id="qr-actions" style="margin-top:18px;display:none;text-align:center;">
+        <button id="downloadQR" type="button"
+            style="width:100%;padding:14px 18px;border:0;border-radius:12px;background:#2563eb;color:#fff;font-size:16px;font-weight:600;cursor:pointer;">
+            ⬇️ Download QR Code
+        </button>
+    </div>
+
     <a href="index.html" class="back">
         ← Kembali ke ToolKu
     </a>
@@ -125,6 +132,40 @@ function generateQR() {
         width: 200,
         height: 200
     });
+
+      const actions = document.getElementById("qr-actions");
+      const downloadButton = document.getElementById("downloadQR");
+
+      actions.style.display = "block";
+
+      downloadButton.onclick = function() {
+          const canvas = qr.querySelector("canvas");
+
+          if (!canvas) {
+              alert("QR Code belum siap untuk disimpan.");
+              return;
+          }
+
+          canvas.toBlob(function(blob) {
+              if (!blob) {
+                  alert("Gagal membuat file QR Code.");
+                  return;
+              }
+
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+
+              a.href = url;
+              a.download = "toolku-qrcode.png";
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+
+              setTimeout(function() {
+                  URL.revokeObjectURL(url);
+              }, 1000);
+          }, "image/png");
+      };
 }
 
 </script>
