@@ -98,6 +98,11 @@
 
     <div id="qrcode"></div>
 
+    <button id="resetQR" type="button"
+        style="margin-top:10px;width:100%;padding:12px;border:1px solid #d1d5db;border-radius:12px;background:transparent;color:inherit;font-size:15px;font-weight:600;cursor:pointer;">
+        🔄 Reset QR
+    </button>
+
     <div id="qr-actions" style="margin-top:18px;display:none;text-align:center;">
     <div id="qr-secondary-actions"
         style="margin-top:10px;display:flex;gap:10px;">
@@ -127,6 +132,24 @@
 <script src="./qrcode.min.js"></script>
 
 <script>
+
+const resetButton = document.getElementById("resetQR");
+
+resetButton.onclick = function() {
+    document.getElementById("text").value = "";
+    document.getElementById("qrcode").innerHTML = "";
+    document.getElementById("qr-actions").style.display = "none";
+    document.getElementById("copyQR").style.display = "none";
+    document.getElementById("shareQR").style.display = "none";
+    document.getElementById("text").focus();
+};
+
+document.getElementById("text").addEventListener("keydown", function(event) {
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        event.preventDefault();
+        generateQR();
+    }
+});
 
 function generateQR() {
 
