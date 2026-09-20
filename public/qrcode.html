@@ -95,6 +95,11 @@
         style="margin-top:6px;text-align:right;font-size:13px;opacity:.65;">
         0 / 2000 karakter
     </div>
+    <div id="qr-action-hint"
+        style="margin-top:6px;font-size:12px;opacity:.65;">
+        Buat QR Code terlebih dahulu untuk menggunakan tombol aksi.
+    </div>
+
     <div id="qrStatus"
         style="margin-top:10px;text-align:center;font-size:14px;min-height:20px;opacity:.75;"
         aria-live="polite"></div>
@@ -177,6 +182,18 @@ updateCharCount();
 
 const resetButton = document.getElementById("resetQR");
 
+const actionButtons = [
+    document.getElementById("downloadQR"),
+    document.getElementById("copyQR"),
+    document.getElementById("shareQR")
+];
+
+actionButtons.forEach(function(button) {
+    button.disabled = true;
+    button.style.opacity = ".5";
+    button.style.cursor = "not-allowed";
+});
+
 resetButton.onclick = function() {
     document.getElementById("text").value = "";
     document.getElementById("qrcode").innerHTML = "";
@@ -185,6 +202,17 @@ resetButton.onclick = function() {
     document.getElementById("qr-actions").style.display = "none";
     document.getElementById("copyQR").style.display = "none";
     document.getElementById("shareQR").style.display = "none";
+
+    actionButtons.forEach(function(button) {
+        button.disabled = true;
+        button.style.opacity = ".5";
+        button.style.cursor = "not-allowed";
+    });
+
+    document.getElementById("qr-action-hint").textContent =
+        "Buat QR Code terlebih dahulu untuk menggunakan tombol aksi.";
+    document.getElementById("qr-action-hint").style.opacity = ".65";
+
     document.getElementById("text").focus();
 };
 
@@ -232,6 +260,16 @@ function generateQR() {
       actions.style.display = "block";
       copyButton.style.display = "block";
       shareButton.style.display = "block";
+
+      actionButtons.forEach(function(button) {
+          button.disabled = false;
+          button.style.opacity = "1";
+          button.style.cursor = "pointer";
+      });
+
+      document.getElementById("qr-action-hint").textContent =
+          "QR Code siap digunakan.";
+      document.getElementById("qr-action-hint").style.opacity = "1";
 
       copyButton.onclick = async function() {
           const value = document.getElementById("text").value;
