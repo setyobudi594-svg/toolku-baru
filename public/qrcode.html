@@ -95,6 +95,9 @@
         style="margin-top:6px;text-align:right;font-size:13px;opacity:.65;">
         0 / 2000 karakter
     </div>
+    <div id="qrStatus"
+        style="margin-top:10px;text-align:center;font-size:14px;min-height:20px;opacity:.75;"
+        aria-live="polite"></div>
 
     <button onclick="generateQR()">
         Buat QR Code
@@ -141,6 +144,24 @@ const textInput = document.getElementById("text");
 const charCount = document.getElementById("charCount");
 const MAX_QR_LENGTH = 2000;
 
+const qrStatus = document.getElementById("qrStatus");
+
+function setQRStatus(message, type = "normal") {
+    qrStatus.textContent = message;
+
+    if (type === "success") {
+        qrStatus.style.opacity = "1";
+        qrStatus.style.fontWeight = "600";
+    } else if (type === "error") {
+        qrStatus.style.opacity = "1";
+        qrStatus.style.fontWeight = "600";
+    } else {
+        qrStatus.style.opacity = ".75";
+        qrStatus.style.fontWeight = "400";
+    }
+}
+
+
 function updateCharCount() {
     const length = textInput.value.length;
     charCount.textContent = `${length} / ${MAX_QR_LENGTH} karakter`;
@@ -160,6 +181,7 @@ resetButton.onclick = function() {
     document.getElementById("text").value = "";
     document.getElementById("qrcode").innerHTML = "";
     updateCharCount();
+    setQRStatus("");
     document.getElementById("qr-actions").style.display = "none";
     document.getElementById("copyQR").style.display = "none";
     document.getElementById("shareQR").style.display = "none";
@@ -181,20 +203,26 @@ function generateQR() {
     qr.innerHTML = "";
 
     if (text.trim() === "") {
+        setQRStatus("Masukkan teks atau link terlebih dahulu.", "error");
         alert("Masukkan teks atau link terlebih dahulu.");
         return;
     }
 
     if (text.length > MAX_QR_LENGTH) {
+        setQRStatus("Teks terlalu panjang. Maksimal 2000 karakter.", "error");
         alert("Teks terlalu panjang. Maksimal 2000 karakter.");
         return;
     }
+
+    setQRStatus("Membuat QR Code...");
 
     new QRCode(qr, {
         text: text,
         width: 200,
         height: 200
     });
+
+      setQRStatus("QR Code berhasil dibuat", "success");
 
       const actions = document.getElementById("qr-actions");
       const downloadButton = document.getElementById("downloadQR");
